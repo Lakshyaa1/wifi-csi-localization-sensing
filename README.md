@@ -1,21 +1,23 @@
-# Motion detection with two ESP32-S3 boards (Wi-Fi CSI)
+# Wi-Fi CSI based localisation and sensing
 
-A first experiment in Wi-Fi sensing: detecting human motion using only **two ESP32-S3 boards**, one transmitting and one receiving, and the **channel state information (CSI)** the receiver reports for every packet. No cameras, wearables or extra hardware.
+## Motion detection with two ESP32-S3 boards
+
+The first experiment: detecting human motion using only **two ESP32-S3 boards**, one transmitting and one receiving, and the **channel state information (CSI)** the receiver reports for every packet. No cameras, wearables or extra hardware.
 
 ![Static vs motion](plots/first_motion_static_vs_motion.png)
 
-## Setup
+### Setup
 
 - **Hardware:** 2 × ESP32-S3 dev boards (on-board PCB antennas), about 80 cm apart, line of sight.
 - **Firmware:** Espressif's [esp-csi](https://github.com/espressif/esp-csi) `get-started` examples, unmodified (`csi_send` on one board, `csi_recv` on the other), built with ESP-IDF v5.5.
 - **Link:** ESP-NOW on Wi-Fi channel 11, about 70 CSI packets/s reaching the laptop over serial at 921600 baud.
 - **CSI used:** amplitude of the 52 active subcarriers of the legacy LTF.
 
-## Experiment
+### Experiment
 
 One 50 s recording with spoken cues: still, motion, still, motion, still (10 s each). Motion was a hand waving through the link in both motion phases.
 
-## Results
+### Results
 
 | | Still | Motion |
 |---|---|---|
@@ -28,7 +30,7 @@ One 50 s recording with spoken cues: still, motion, still, motion, still (10 s e
 
 ![CSI amplitude](plots/first_motion.png)
 
-### Phase
+#### Phase
 
 Raw ESP32 CSI phase is random from packet to packet (clock offsets). After removing the linear phase trend across subcarriers per packet, the sanitized phase is stable when still and fluctuates about twice as much during motion.
 

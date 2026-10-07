@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+data/parser_check.csv
+plots/parser_check.png

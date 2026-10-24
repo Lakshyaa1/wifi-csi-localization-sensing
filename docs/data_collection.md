@@ -1,13 +1,12 @@
-# Weekend data collection guide
+# Data collection guide
 
-Goal for this weekend: find out whether one router and two ESP32-S3 boards can tell
-**empty / walk / sit / wave** apart from Wi-Fi CSI. One question decides whether the project
-continues:
+Step-by-step instructions for recording a labelled dataset with one router and two ESP32-S3
+boards. The first goal is a feasibility check:
 
 > Train on one session, test on a second session recorded later. Is accuracy clearly above
 > chance (25% for 4 classes), and is `empty` vs moving above about 80%?
 
-Everything below has been tested on real hardware once (Oct 24), except where marked.
+Hardware steps below were tested on real boards on Oct 24, 2026, except where marked.
 
 ## 1. What you need
 
@@ -28,7 +27,7 @@ ESP-IDF v5.x. If you use conda, take it off `PATH` before sourcing `export.sh`.
 ```bash
 git clone https://github.com/espressif/esp-csi
 cd esp-csi
-git apply /path/to/this/repo/csi-capture/firmware/csi_recv_router.patch   # gain lock + power save off
+git apply /path/to/this/repo/firmware/csi_recv_router.patch   # gain lock + power save off
 cd examples/get-started/csi_recv_router
 idf.py set-target esp32s3
 idf.py menuconfig      # Example Connection Configuration -> SSID and password (case-sensitive!)
@@ -50,7 +49,7 @@ SSID spelling and case, and that it is the 2.4 GHz network.
 ## 4. Python
 
 ```bash
-cd csi-capture
+cd sensing
 python3 -m venv .venv && source .venv/bin/activate
 pip install numpy scipy matplotlib scikit-learn pyserial
 python sim.py --room A --out data && python check_quality.py data/session_*_roomA_sim   # fake data, checks the code runs

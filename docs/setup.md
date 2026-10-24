@@ -1,7 +1,8 @@
-# CSI capture: router → ESP32-S3
+# Setup and pipeline reference
 
-Record Wi-Fi CSI from a router with ESP32-S3 boards, clean it, and build a labelled dataset for
-activity recognition across rooms.
+How the router → ESP32-S3 capture works, how to flash the boards, and what each step of the
+pipeline does. For a step-by-step recording session, see [data_collection.md](data_collection.md).
+All commands run from the `sensing/` folder.
 
 | file | what it does |
 |---|---|
@@ -68,7 +69,7 @@ Easiest: apply our patch, which makes both changes below (gain lock and power sa
 
 ```
 cd esp-csi
-git apply /path/to/this/repo/csi-capture/firmware/csi_recv_router.patch
+git apply /path/to/this/repo/firmware/csi_recv_router.patch
 ```
 
 **Power save must be off.** The unmodified example leaves Wi-Fi power save on. The board then
@@ -137,6 +138,11 @@ Cleaning steps, per clip and per board:
 
 Output: `X` with shape (clips, boards, 52, 300), plus labels and room for each clip.
 `figs/dsp_raw_vs_clean.png` and `figs/classes.png` are made for the DSP demo.
+
+Example output on **simulated** data (shown only to illustrate the figures, not as results):
+
+![Raw vs cleaned CSI (simulated)](images/simulated_dsp_raw_vs_clean.png)
+![Classes (simulated)](images/simulated_classes.png)
 
 ## 7. The first experiment
 

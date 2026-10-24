@@ -1,11 +1,14 @@
 __pycache__/
 *.pyc
-data/parser_check.csv
-plots/parser_check.png
 .venv/
-# recordings stay local
-data/*
-!data/first_motion.csv
-csi-capture/data/
+notes/
+
+# recordings and generated outputs stay local
+espnow_pilot/data/*
+!espnow_pilot/data/first_motion.csv
+espnow_pilot/plots/parser_check.png
+sensing/data/
+sensing/figs/
 *.npz
-csi-capture/figs/
+espnow_pilot/plots/test_short2_session.png
+espnow_pilot/plots/first_motion_preprocessed.png

@@ -1,0 +1,6 @@
+serial,role,wifi_mac,note
+5CE5198291,tx,b8:1f:3f:bb:02:fc,UART socket; csi_send with blinking LED flashed 2026-10-11
+5CE5199687,rx1,7c:e8:b1:b0:50:04,UART socket
+5C4C169816,rx2,a4:cb:8f:d8:92:70,UART socket; csi_recv flashed 2026-10-12
+A4:CB:8F:D8:92:70,rx2,a4:cb:8f:d8:92:70,same board on its native USB socket
+7C:E8:B1:B0:50:04,rx1,7c:e8:b1:b0:50:04,same board on its native USB socket

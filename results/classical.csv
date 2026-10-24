@@ -1,0 +1,9 @@
+target,links,split,train,test,model,accuracy,macro_f1,zone_error_m
+activity,all,session,p02,p03,majority_class,0.2500,0.1000,nan
+activity,all,session,p02,p03,random_forest,0.2328,0.2037,nan
+activity,all,session,p02,p03,svm_rbf,0.2672,0.2508,nan
+activity,all,session,p02,p03,random_forest_shuffled_labels,0.1121,0.1095,nan
+activity,all,session,p03,p02,majority_class,0.2500,0.1000,nan
+activity,all,session,p03,p02,random_forest,0.2845,0.2934,nan
+activity,all,session,p03,p02,svm_rbf,0.3276,0.3090,nan
+activity,all,session,p03,p02,random_forest_shuffled_labels,0.3534,0.3122,nan

@@ -1,5 +1,21 @@
 # Wi-Fi CSI based localisation and sensing
 
+## Current work: activity recognition with a router and two ESP32-S3 boards
+
+[`csi-capture/`](csi-capture/) records labelled 3 s clips (empty, walk, sit, wave) from two
+ESP32-S3 boards that measure CSI on a 2.4 GHz router's ping replies, cleans them, and trains a
+baseline classifier. **To collect data, follow [`csi-capture/DATA_COLLECTION.md`](csi-capture/DATA_COLLECTION.md).**
+
+Status (Oct 24): capture, quality check and dataset building work on real router data (both
+boards at 100 packets/s after turning off Wi-Fi power save). No usable labelled dataset yet, so
+there is no real accuracy number.
+
+The older scripts at the top level (multi-receiver ESP-NOW logger, `preprocess.py`, `features.py`,
+`train_classical.py`, `live_view.py`) are from the earlier ESP-NOW setup, described in
+`CONTEXT.md`, `PLAN.md` and `protocol.md`. Known issue: `preprocess.py` reorders subcarriers as
+if the ESP-NOW buffer were 0..31, −32..−1; on our boards that buffer is already in frequency
+order, so that reorder (and the phase sanitization that depends on it) is wrong.
+
 ## Motion detection with two ESP32-S3 boards
 
 The first experiment: detecting human motion using only **two ESP32-S3 boards**, one transmitting and one receiving, and the **channel state information (CSI)** the receiver reports for every packet. No cameras, wearables or extra hardware.

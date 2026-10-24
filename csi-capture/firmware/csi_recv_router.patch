@@ -1,0 +1,21 @@
+diff --git a/examples/get-started/csi_recv_router/main/app_main.c b/examples/get-started/csi_recv_router/main/app_main.c
+index 128f7e8..2c23cd8 100644
+--- a/examples/get-started/csi_recv_router/main/app_main.c
++++ b/examples/get-started/csi_recv_router/main/app_main.c
+@@ -39,7 +39,7 @@
+ #if CONFIG_IDF_TARGET_ESP32C5 || CONFIG_IDF_TARGET_ESP32C61
+ #define CSI_FORCE_LLTF                      0
+ #endif
+-#define CONFIG_FORCE_GAIN                   0
++#define CONFIG_FORCE_GAIN                   1
+ 
+ #if CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C5 || CONFIG_IDF_TARGET_ESP32C6 || CONFIG_IDF_TARGET_ESP32C61
+ #define CONFIG_GAIN_CONTROL                 1
+@@ -215,6 +215,7 @@ void app_main()
+      *        for more information about this function.
+      */
+     ESP_ERROR_CHECK(example_connect());
++    ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));   // power save delays ping replies and drops the CSI rate
+ 
+     wifi_csi_init();
+     wifi_ping_router_start();

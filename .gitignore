@@ -2,3 +2,10 @@ __pycache__/
 *.pyc
 data/parser_check.csv
 plots/parser_check.png
+.venv/
+# recordings stay local
+data/*
+!data/first_motion.csv
+csi-capture/data/
+*.npz
+csi-capture/figs/

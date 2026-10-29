@@ -31,7 +31,7 @@ router (2.4 GHz, fixed channel)  ── ping replies, 100/s ──►  ESP32-S3 
 
 | Folder | Contents |
 |---|---|
-| [`sensing/`](sensing/) | Current pipeline: `record.py`, `check_quality.py`, `build_dataset.py`, `train_baseline.py`, shared DSP in `csi_common.py`, and `sim.py` (simulated boards for testing without hardware) |
+| [`sensing/`](sensing/) | Current pipeline: `record.py` (with `cue.py`, an on-screen cue window), `check_quality.py`, `build_dataset.py`, `train_baseline.py`, shared DSP in `csi_common.py`, and `sim.py` (simulated boards for testing without hardware) |
 | [`firmware/`](firmware/) | Patch for Espressif's [esp-csi](https://github.com/espressif/esp-csi) `csi_recv_router` example: receiver gain lock and Wi-Fi power save off |
 | [`docs/`](docs/) | Setup, data collection and pilot results |
 | [`espnow_pilot/`](espnow_pilot/) | Scripts and one recording from the earlier ESP32-to-ESP32 (ESP-NOW) pilots |
@@ -65,7 +65,8 @@ With hardware, follow the [data collection guide](docs/data_collection.md).
 | Motion detection, one ESP-NOW link (pilot 1) | 82% of 0.5 s windows, still vs motion, single recording ([details](docs/pilot_runs.md#pilot-1-motion-detection-one-esp-now-link-oct-2026)) |
 | Four activities across sessions, ESP-NOW (pilot 2) | Chance level: too little data, poor placement ([details](docs/pilot_runs.md#pilot-2-four-activities-two-esp-now-receivers-oct-12-2026)) |
 | Router-based capture (pilot 3) | Two receivers at ~100 packets/s; pipeline verified end to end on real data |
-| Labelled dataset, room A and room B | In progress |
+| Router-based activity session (pilot 4) | 80 clips recorded; walking not separable from an empty room with a router transmitter ([details](docs/pilot_runs.md#pilot-4-router-activity-session-oct-29-2026)) |
+| Labelled dataset, room A and room B | In progress: next attempt uses an ESP-to-ESP link |
 | Cross-room drop and source-free adaptation | Planned |
 
 ![Pilot 1: still vs motion](espnow_pilot/plots/first_motion_static_vs_motion.png)

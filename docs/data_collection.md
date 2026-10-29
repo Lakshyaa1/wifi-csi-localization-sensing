@@ -85,24 +85,29 @@ Two sessions, at least an hour apart (or on two days), in the same room with the
 Name them as different "rooms" so the training script can use one to train and the other to test:
 
 ```bash
-python record.py --ports <port0> <port1> --room A1 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak
+python record.py --ports <port0> <port1> --room A1 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak --screen
 # later
-python record.py --ports <port0> <port1> --room A2 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak
+python record.py --ports <port0> <port1> --room A2 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak --screen
 ```
 
 - 80 clips × about 13 s = about 18 minutes per session. Labels come in random order.
 - `--speak` reads the cues aloud (Linux, `spd-say`): "next, walk", then a 3 s count, "go"
   (do the action for 3 s), "stop". Without `--auto`, the operator presses Enter for each clip.
-- The script stops at the start if the boards aren't streaming at 80/s or more.
+- `--screen` opens a full-screen cue window the actor can see: red = wait (next action and a
+  countdown to GO), green = do the action (countdown to STOP). Esc closes it; recording goes on.
+- The script stops at the start if the boards don't average 80/s or more over 5 s (`--min-rate`).
+- **Before a full session, run a 1-minute check:** 30 s with the actor outside the room, then
+  30 s walking across the lines. Only record the session if walking clearly changes the signal
+  more than the empty room does.
 - Actions:
-  - `empty`: actor leaves the area and stands still behind the boards.
+  - `empty`: actor leaves the room (in a small room, standing behind the boards still moves the signal).
   - `walk`: walk back and forth across both lines, within about 1 m of the spot.
   - `sit`: one sit-down-and-stand-up on the chair at the spot.
   - `wave`: stand on the spot and wave one arm. Only wave. Don't walk.
 - Wrong action in a clip? Write it down and change that clip's `flag` to `bad_label` in the
   session's `index.csv`. The raw data is never cut, so nothing is lost.
-- If a clip says `low_rate`, it is re-recorded at the end. If many do, stop (`Ctrl-C`) and check
-  the boards (section 8).
+- A clip with too few packets is flagged `low_rate` and the session moves on (no re-recording).
+  If many are, stop (`Ctrl-C`) and check the boards (section 8).
 
 ## 7. Check and train
 
@@ -128,7 +133,8 @@ each activity looks like.
 | Rate starts at 100/s, then drops to a few per second | Power save is on: apply the patch and reflash. |
 | One board loses Wi-Fi mid-session ("beacon timeout") | Seen once on Oct 24, at strong signal. Probably power or cable; not confirmed. Try another cable or USB port. |
 | Laptop can't power two boards | Use a powered USB hub, or a second laptop for the second board. |
-| `empty` clips look as noisy as motion clips | **Not yet solved.** On Oct 24 the CSI changed about 28% packet to packet even in an empty room, with RSSI around −38 dBm. Unverified guess: the signal is too strong and the locked gain is low, so the CSI integers are small and coarse. Try moving the router further away (aim for RSSI −45 to −60 dBm in `check_quality.py`) and compare. |
+| `empty` clips look as noisy as motion clips | **Not yet solved.** With a router as transmitter, an empty room changed about 25% within a 3 s clip (Oct 24 and Oct 29), as much as walking. Per-packet normalisation and a 0.3–5 Hz band-pass did not separate them. Suspects, unconfirmed: the router spreading frames over several antennas, and an "empty" room that wasn't empty. Next test: ESP-to-ESP link, actor outside the room. |
+| Rate fine at first, then varies or collapses on a shared router | The router's reply rate depends on network load. On Oct 29 it held 100/s only while the laptop also pinged the router (`ping -i 0.01 <gateway>`). Packets also dropped when a person stood on the link. |
 
 ## 9. What to send back
 

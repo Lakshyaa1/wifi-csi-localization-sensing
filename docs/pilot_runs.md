@@ -1,6 +1,6 @@
 # Pilot runs
 
-Three small pilot runs so far. None is a full experiment; together they shaped the current setup.
+Four small pilot runs so far. None is a full experiment; together they shaped the current setup.
 
 ## Pilot 1: motion detection, one ESP-NOW link (Oct 2026)
 
@@ -61,6 +61,30 @@ and very little data.
   to train on. Even in an empty room the amplitude changed about 28% between consecutive
   packets, which is being investigated (see the
   [data collection guide](data_collection.md#8-problems-we-already-hit)).
+
+## Pilot 4: router activity session (Oct 29, 2026)
+
+- **Hardware:** a shared 2.4 GHz router (channel 11) as transmitter, one ESP32-S3 receiver at
+  about 3 m (RSSI about −40 dBm). A second receiver averaged only 13 packets/s and was dropped.
+- **Recording:** 80 clips of 3 s (20 each of `empty`, `walk`, `sit`, `wave`), shuffled, with
+  voice and on-screen cues. The laptop pinged the router at 100 Hz during the session, which
+  kept the reply rate up; without it the rate fell to about 10/s.
+- **Packets per clip (median, ideal 300):** empty 266, walk 216, sit 54, wave 38. Packets were
+  lost when the actor stood on the link, so 30 of 80 clips were too sparse to use.
+- **Motion score** (mean over subcarriers of the relative amplitude change in a clip), clips
+  with at least 150 packets:
+
+| | empty (13) | walk (17) |
+|---|---|---|
+| all frequencies | 0.251 | 0.264 |
+| 0.3–5 Hz band | 0.162 | 0.202 |
+
+- **Result: walking was not separable from the empty room.** Normalising each packet by its mean
+  level did not change this, so it is not simple gain jitter.
+- **Unconfirmed suspects:** the router spreading frames over several antennas (pilot 1's
+  single-antenna ESP transmitter was much steadier), and an "empty" room that wasn't empty
+  (the actor stayed in the room). Next: ESP-to-ESP link, actor outside the room for `empty`,
+  and a 1-minute empty-vs-walk check before any full session.
 
 ## Pilot code
 

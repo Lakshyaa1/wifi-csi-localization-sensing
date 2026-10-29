@@ -83,6 +83,30 @@ def beep():
     sys.stdout.write("\a"); sys.stdout.flush()
 
 
+class Screen:
+    """Full-screen red/green cue window (cue.py) in a child process; does nothing if disabled."""
+    def __init__(self, enabled):
+        self.p = None
+        if enabled:
+            cue = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cue.py")
+            self.p = subprocess.Popen([sys.executable, cue], stdin=subprocess.PIPE, text=True)
+
+    def show(self, state, label, secs=0.0, info=""):
+        if self.p and self.p.poll() is None:
+            end = time.time() + secs if secs else 0
+            try:
+                self.p.stdin.write(f"{state}\t{label}\t{end:.3f}\t{info}\n"); self.p.stdin.flush()
+            except (BrokenPipeError, OSError):
+                self.p = None
+
+    def close(self):
+        if self.p:
+            try:
+                self.p.stdin.close()
+            except OSError:
+                pass
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ports", nargs="*", default=[], help="serial ports, one per board")
@@ -99,7 +123,9 @@ def main():
     ap.add_argument("--simulate", action="store_true", help="use fake boards instead of serial ports")
     ap.add_argument("--sim-boards", type=int, default=2)
     ap.add_argument("--speak", action="store_true", help="announce labels, go and stop with spd-say")
+    ap.add_argument("--screen", action="store_true", help="full-screen cue window: red = wait, green = act")
     a = ap.parse_args()
+    screen = Screen(a.screen)
 
     plan = parse_plan(a.plan)
     labels = [lab for lab, n in plan for _ in range(n)]
@@ -137,12 +163,14 @@ def main():
     print(f"Session folder: {sdir}")
     print("Warming up (waiting for every board to stream, up to 30 s) ...")
     t_wait = time.time()
-    time.sleep(3)
-    while time.time() - t_wait < 30 and any(r.rate() < a.min_rate for r in readers):
+    time.sleep(8)   # board resets on port open and needs ~6 s before CSI starts
+    while time.time() - t_wait < 30 and any(r.rate(5) < a.min_rate for r in readers):
         time.sleep(1)
-    rates = "  ".join(f"{r.name}: {r.rate():.0f}/s" for r in readers)
+    rates = "  ".join(f"{r.name}: {r.rate(5):.0f}/s" for r in readers)
     print(f"Packet rate  {rates}")
-    if any(r.rate() < a.min_rate for r in readers):
+    if any(r.rate(5) < a.min_rate for r in readers):   # 5 s average; 1 s is too jumpy
+        screen.show("idle", "boards too slow", info=rates)
+        screen.close()
         sys.exit(f"Stopping: below {a.min_rate:.0f}/s after 30 s. Check the router, distance, and that the board "
                  "is connected (see README, 'Fixing a low packet rate').")
 
@@ -159,17 +187,22 @@ def main():
             lab = labels[i]
             print(f"\nClip {i + 1}/{len(labels)}   next: {lab.upper()}")
             say(f"next, {lab}", a.speak)
+            progress = f"clip {i + 1} of {len(labels)}"
             if a.auto:
+                screen.show("wait", lab, max(0.0, a.gap_sec - 3) + 3, progress)
                 time.sleep(max(0.0, a.gap_sec - 3))
             else:
+                screen.show("wait", lab, 0, progress + "  (operator presses Enter)")
                 cmd = input("  Enter = start,  s = skip,  q = quit > ").strip().lower()
                 if cmd == "q":
                     break
                 if cmd == "s":
                     i += 1; continue
+                screen.show("wait", lab, 3, progress)
             for c in (3, 2, 1):
                 print(f"  {c} ...", end="", flush=True); time.sleep(1)
             beep(); say("go", a.speak); print("  GO")
+            screen.show("go", lab, a.clip_sec, progress)
             counts0 = [r.total for r in readers]
             sim_state["activity"] = lab
             t0 = time.time()
@@ -179,14 +212,15 @@ def main():
             t1 = time.time()
             sim_state["activity"] = "empty"
             beep(); say("stop", a.speak); print("\n  STOP")
+            screen.show("wait", "stop", 0, progress)
             got = [r.total - c0 for r, c0 in zip(readers, counts0)]
             need = a.min_rate * a.clip_sec
             flag = "ok" if all(g >= need for g in got) else "low_rate"
             w.writerow([clip_id, lab, a.room, a.person, f"{t0:.6f}", f"{t1:.6f}", flag])
             print(f"  saved clip {clip_id} ({', '.join(str(g) for g in got)} packets) [{flag}]")
+            # flag only, never re-queue: one slow board made the same label repeat endlessly
             if flag != "ok":
-                print("  Too few packets, this label will be recorded again at the end.")
-                labels.append(lab)
+                print("  Few packets on at least one board; flagged, moving on.")
             clip_id += 1
             i += 1
     except KeyboardInterrupt:
@@ -196,6 +230,8 @@ def main():
             r.running = False
         time.sleep(0.3)
         idx.close()
+        screen.show("done", "done", info=f"{clip_id} clips saved")
+        screen.close()
         print(f"\nDone. {clip_id} clips in {sdir}")
         print(f"Next:  python check_quality.py {sdir}")
 

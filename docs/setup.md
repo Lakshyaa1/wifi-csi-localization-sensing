@@ -6,7 +6,8 @@ All commands run from the `sensing/` folder.
 
 | file | what it does |
 |---|---|
-| `record.py` | records labelled clips from 1–2 boards (or fake boards with `--simulate`) |
+| `record.py` | records labelled clips from 1–2 boards (or fake boards with `--simulate`); `--speak` and `--screen` give voice and on-screen cues |
+| `cue.py` | the full-screen red/green cue window used by `record.py --screen` |
 | `check_quality.py` | checks a session right after recording; saves `quality.png` |
 | `build_dataset.py` | cuts clips, cleans them, saves `dataset.npz`; `--plots` makes the DSP figures |
 | `train_baseline.py` | trains in room A, tests in room A and room B, shows the drop |
@@ -101,7 +102,7 @@ python record.py --ports COM5 COM6 --room A --person p1 --plan empty:10,walk:10,
   per clip. For `empty`, the actor leaves the area.
 - Nobody else moves in the room during a clip.
 - Vary the actor's position slightly within the area between clips.
-- A clip with too few packets is flagged and automatically re-queued.
+- A clip with too few packets is flagged `low_rate`; it is not re-recorded.
 - Target: about 50 clips per class per room, over at least two sessions.
 - Wrong label? Fix it in that session's `index.csv`. The raw data is never cut, so nothing is lost.
 

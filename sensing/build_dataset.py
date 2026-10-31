@@ -10,7 +10,7 @@ For every clip in each session's index.csv, and for every board:
   4. resample onto an exact 100 Hz grid (packets arrive with jitter and some are lost)
   5. Hampel filter: replace remaining single-subcarrier spikes with the local median
   6. low-pass at 20 Hz (zero-phase Butterworth)
-Boards are stacked, giving one array per clip of shape (boards, 52, 300) for 3 s at 100 Hz.
+Boards are stacked, giving one array per clip of shape (boards, 52, 300) (300 for a 3 s clip at 100 Hz).
 That is the same idea as the paper's 1 x F x T input, with F = boards x subcarriers.
 """
 import argparse, csv, glob, json, os
@@ -36,11 +36,14 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("sessions", nargs="+")
     ap.add_argument("--out", default="dataset.npz")
-    ap.add_argument("--clip-sec", type=float, default=3.0)
-    ap.add_argument("--keep-flagged", action="store_true", help="also keep clips flagged low_rate")
+    ap.add_argument("--clip-sec", type=float, default=None, help="default: from the first session's meta.json")
+    ap.add_argument("--keep-flagged", action="store_true", help="also keep clips flagged low_rate or gap")
     ap.add_argument("--plots", default=None, help="folder for DSP figures (one example per class)")
     a = ap.parse_args()
+    if a.clip_sec is None:
+        a.clip_sec = float(json.load(open(os.path.join(a.sessions[0], "meta.json"))).get("clip_sec", 3.0))
     T = int(a.clip_sec * FS)
+    print(f"clip length {a.clip_sec:g} s -> {T} samples")
 
     X, y_names, rooms, sess, cids, persons, qinfo = [], [], [], [], [], [], []
     examples = {}

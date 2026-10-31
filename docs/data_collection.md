@@ -85,14 +85,17 @@ Two sessions, at least an hour apart (or on two days), in the same room with the
 Name them as different "rooms" so the training script can use one to train and the other to test:
 
 ```bash
-python record.py --ports <port0> <port1> --room A1 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak --screen
+python record.py --ports <port0> <port1> --room A1 --plan empty:10,walk:10,sit:10,wave:10 --auto --screen --ping --stop-on-flag
 # later
-python record.py --ports <port0> <port1> --room A2 --plan empty:20,walk:20,sit:20,wave:20 --auto --gap-sec 10 --speak --screen
+python record.py --ports <port0> <port1> --room A2 --plan empty:10,walk:10,sit:10,wave:10 --auto --screen --ping --stop-on-flag
 ```
 
-- 80 clips × about 13 s = about 18 minutes per session. Labels come in random order.
-- `--speak` reads the cues aloud (Linux, `spd-say`): "next, walk", then a 3 s count, "go"
-  (do the action for 3 s), "stop". Without `--auto`, the operator presses Enter for each clip.
+- Clips are 5 s with 8 s gaps (`--clip-sec`, `--gap-sec`): 40 clips take about 9 minutes.
+  Labels come in random order.
+- `--ping` makes the laptop ping the router 100 times a second during the session, which keeps
+  the router's reply rate steady (it finds the router itself; or give its IP).
+- `--speak` reads the cues aloud (Linux, `spd-say`): "next, walk", then a 3 s count, "go",
+  "stop". Without `--auto`, the operator presses Enter for each clip.
 - `--screen` opens a full-screen cue window the actor can see: red = wait (next action and a
   countdown to GO), green = do the action (countdown to STOP). Esc closes it; recording goes on.
 - The script stops at the start if the boards don't average 80/s or more over 5 s (`--min-rate`).
@@ -106,8 +109,11 @@ python record.py --ports <port0> <port1> --room A2 --plan empty:20,walk:20,sit:2
   - `wave`: stand on the spot and wave one arm. Only wave. Don't walk.
 - Wrong action in a clip? Write it down and change that clip's `flag` to `bad_label` in the
   session's `index.csv`. The raw data is never cut, so nothing is lost.
-- A clip with too few packets is flagged `low_rate` and the session moves on (no re-recording).
-  If many are, stop (`Ctrl-C`) and check the boards (section 8).
+- A clip with too few packets is flagged `low_rate`; a clip where any board goes more than
+  0.3 s without a packet is flagged `gap` (a stall makes an empty clip look like motion).
+  `build_dataset.py` leaves flagged clips out. With `--stop-on-flag` the session stops right
+  after a flagged clip; continue it later with `--resume <session folder>`, which records only
+  the clips still missing.
 
 ## 7. Check and train
 
@@ -119,6 +125,13 @@ python train_baseline.py dataset.npz --source A1 --target A2
 
 Good quality looks like: 90–100 packets/s on both boards, "52 carry signal", RSSI steady, and in
 `quality.png` the heatmap changes during motion clips and stays calm during `empty`.
+
+To see live guesses on screen (learned from a dataset, last 5 s, updated every 0.5 s; give the
+ports in the same order as when recording):
+
+```bash
+python live.py dataset.npz --ports <port0> <port1>
+```
 
 `train_baseline.py` prints two numbers. The **"new room (A2)"** accuracy is the one that matters
 here: trained on session A1, tested on session A2. Also look at `figs/classes.png` to see what
@@ -133,7 +146,8 @@ each activity looks like.
 | Rate starts at 100/s, then drops to a few per second | Power save is on: apply the patch and reflash. |
 | One board loses Wi-Fi mid-session ("beacon timeout") | Seen once on Oct 24, at strong signal. Probably power or cable; not confirmed. Try another cable or USB port. |
 | Laptop can't power two boards | Use a powered USB hub, or a second laptop for the second board. |
-| `empty` clips look as noisy as motion clips | **Not yet solved.** With a router as transmitter, an empty room changed about 25% within a 3 s clip (Oct 24 and Oct 29), as much as walking. Per-packet normalisation and a 0.3–5 Hz band-pass did not separate them. Suspects, unconfirmed: the router spreading frames over several antennas, and an "empty" room that wasn't empty. Next test: ESP-to-ESP link, actor outside the room. |
+| `empty` clips look as noisy as motion clips | Seen on Oct 24 and Oct 29 with a far router (about 25% change within a clip, as much as walking). On Oct 31, in a small room with a nearby router and the actor outside the room, empty clips changed about 5–11% (median per board and session) and every action clip in session 1 scored higher. The far router's packets came in two alternating shapes; the cause is not confirmed. |
+| A board suddenly gives about 0 packets/s after a restart | Two routers broadcast the same network name; after a restart the board joined the far one (RSSI −94). Fix: in `sdkconfig` set `CONFIG_EXAMPLE_WIFI_SCAN_RSSI_THRESHOLD=-70` and reflash, so weak routers are ignored. |
 | Rate fine at first, then varies or collapses on a shared router | The router's reply rate depends on network load. On Oct 29 it held 100/s only while the laptop also pinged the router (`ping -i 0.01 <gateway>`). Packets also dropped when a person stood on the link. |
 
 ## 9. What to send back

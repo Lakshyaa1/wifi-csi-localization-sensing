@@ -23,6 +23,8 @@ class PortReader(threading.Thread):
         self.recent = deque()
         self.lock = threading.Lock()
         self.total = 0
+        self.last_t = None
+        self.max_gap = 0.0      # longest time between packets since reset_gap()
         self.running = True
 
     def run(self):
@@ -37,6 +39,13 @@ class PortReader(threading.Thread):
                 with self.lock:
                     self.total += 1
                     self.recent.append(t)
+                    if self.last_t is not None:
+                        self.max_gap = max(self.max_gap, t - self.last_t)
+                    self.last_t = t
+
+    def reset_gap(self):
+        with self.lock:
+            self.max_gap = 0.0
 
     def rate(self, window=1.0):
         now = time.time()
@@ -114,11 +123,20 @@ def main():
     ap.add_argument("--room", required=True, help="room name, e.g. A or lab")
     ap.add_argument("--person", default="p1", help="who is acting (for later analysis)")
     ap.add_argument("--plan", required=True, help="label:count list, e.g. empty:10,walk:10")
-    ap.add_argument("--clip-sec", type=float, default=3.0)
-    ap.add_argument("--gap-sec", type=float, default=3.0, help="pause between clips in --auto mode")
+    ap.add_argument("--clip-sec", type=float, default=5.0)
+    ap.add_argument("--gap-sec", type=float, default=8.0, help="pause between clips in --auto mode")
     ap.add_argument("--auto", action="store_true", help="run clips on a timer instead of pressing Enter")
     ap.add_argument("--no-shuffle", action="store_true", help="keep labels in plan order (not recommended)")
     ap.add_argument("--min-rate", type=float, default=80.0, help="warn below this packet rate (per s)")
+    ap.add_argument("--max-gap", type=float, default=0.3,
+                    help="flag a clip if any board goes this long (s) without a packet")
+    ap.add_argument("--ping", nargs="?", const="auto", default=None,
+                    help="ping the router 100x/s from the laptop to keep its reply rate steady "
+                         "(router IP, or no value = default gateway)")
+    ap.add_argument("--stop-on-flag", action="store_true",
+                    help="stop the session at the first clip with few packets or a stall")
+    ap.add_argument("--resume", default=None,
+                    help="session folder to continue: records only the clips still missing from --plan")
     ap.add_argument("--out", default="data")
     ap.add_argument("--simulate", action="store_true", help="use fake boards instead of serial ports")
     ap.add_argument("--sim-boards", type=int, default=2)
@@ -127,13 +145,31 @@ def main():
     a = ap.parse_args()
     screen = Screen(a.screen)
 
+    pinger = None
+    if a.ping:
+        ip = a.ping
+        if ip == "auto":
+            route = subprocess.run(["ip", "route"], capture_output=True, text=True).stdout.split()
+            ip = route[route.index("via") + 1] if "via" in route else None
+        if ip:
+            pinger = subprocess.Popen(["ping", "-i", "0.01", "-q", ip],
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print(f"Pinging {ip} 100x/s from the laptop")
+        else:
+            print("No default gateway found; running without --ping")
+
     plan = parse_plan(a.plan)
-    labels = [lab for lab, n in plan for _ in range(n)]
+    done = {}
+    if a.resume:   # count clips already recorded fine; flagged ones get recorded again
+        for row in csv.DictReader(open(os.path.join(a.resume, "index.csv"))):
+            if row["flag"] == "ok":
+                done[row["label"]] = done.get(row["label"], 0) + 1
+    labels = [lab for lab, n in plan for _ in range(max(0, n - done.get(lab, 0)))]
     if not a.no_shuffle:
         random.shuffle(labels)   # interleave classes so slow drift doesn't line up with one class
 
     stamp = time.strftime("%Y%m%d_%H%M%S")
-    sdir = os.path.join(a.out, f"session_{stamp}_room{a.room}" + ("_sim" if a.simulate else ""))
+    sdir = a.resume or os.path.join(a.out, f"session_{stamp}_room{a.room}" + ("_sim" if a.simulate else ""))
     os.makedirs(sdir, exist_ok=True)
 
     sim_state = {"activity": "empty"}
@@ -155,10 +191,12 @@ def main():
     for r in readers:
         r.start()
 
-    json.dump(dict(room=a.room, person=a.person, ports=a.ports, baud=a.baud, plan=plan,
-                   clip_sec=a.clip_sec, simulated=a.simulate,
-                   boards=[r.name for r in readers], started=stamp),
-              open(os.path.join(sdir, "meta.json"), "w"), indent=2)
+    if not a.resume:
+        json.dump(dict(room=a.room, person=a.person, ports=a.ports, baud=a.baud, plan=plan,
+                       clip_sec=a.clip_sec, max_gap=a.max_gap, ping=a.ping, simulated=a.simulate,
+                       boards=[r.name for r in readers], started=stamp),
+                  open(os.path.join(sdir, "meta.json"), "w"), indent=2)
+    print(f"{len(labels)} clips to record" + (f" (already have {done})" if a.resume else ""))
 
     print(f"Session folder: {sdir}")
     print("Warming up (waiting for every board to stream, up to 30 s) ...")
@@ -182,6 +220,9 @@ def main():
         w.writerow(["clip_id", "label", "room", "person", "t_start", "t_end", "flag"])
 
     clip_id, i = 0, 0
+    if not new:   # resuming: continue the clip numbering
+        clip_id = 1 + max(int(r["clip_id"]) for r in csv.DictReader(open(idx_path)))
+    first_id = clip_id
     try:
         while i < len(labels):
             lab = labels[i]
@@ -204,6 +245,8 @@ def main():
             beep(); say("go", a.speak); print("  GO")
             screen.show("go", lab, a.clip_sec, progress)
             counts0 = [r.total for r in readers]
+            for r in readers:
+                r.reset_gap()
             sim_state["activity"] = lab
             t0 = time.time()
             while time.time() - t0 < a.clip_sec:
@@ -215,14 +258,28 @@ def main():
             screen.show("wait", "stop", 0, progress)
             got = [r.total - c0 for r, c0 in zip(readers, counts0)]
             need = a.min_rate * a.clip_sec
-            flag = "ok" if all(g >= need for g in got) else "low_rate"
+            gaps = [r.max_gap for r in readers]
+            if not all(g >= need for g in got):
+                flag = "low_rate"
+            elif any(g > a.max_gap for g in gaps):
+                flag = "gap"            # a stall makes an empty clip look like motion
+            else:
+                flag = "ok"
             w.writerow([clip_id, lab, a.room, a.person, f"{t0:.6f}", f"{t1:.6f}", flag])
-            print(f"  saved clip {clip_id} ({', '.join(str(g) for g in got)} packets) [{flag}]")
+            print(f"  saved clip {clip_id} ({', '.join(str(g) for g in got)} packets, "
+                  f"longest gap {max(gaps):.2f} s) [{flag}]")
             # flag only, never re-queue: one slow board made the same label repeat endlessly
-            if flag != "ok":
-                print("  Few packets on at least one board; flagged, moving on.")
             clip_id += 1
             i += 1
+            if flag != "ok":
+                detail = "; ".join(f"{r.name}: {g} packets, longest gap {mg:.2f} s"
+                                   for r, g, mg in zip(readers, got, gaps))
+                if a.stop_on_flag:
+                    print(f"\nPAUSED: clip {clip_id - 1} ({lab}) flagged {flag}. {detail}")
+                    print(f"Continue later with:  --resume {sdir}")
+                    screen.show("idle", "paused", info=f"{flag} on clip {clip_id - 1}")
+                    break
+                print("  Few packets or a stall on at least one board; flagged, moving on.")
     except KeyboardInterrupt:
         print("\nStopped.")
     finally:
@@ -230,9 +287,11 @@ def main():
             r.running = False
         time.sleep(0.3)
         idx.close()
-        screen.show("done", "done", info=f"{clip_id} clips saved")
+        if pinger:
+            pinger.terminate()
+        screen.show("done", "done", info=f"{clip_id - first_id} clips saved")
         screen.close()
-        print(f"\nDone. {clip_id} clips in {sdir}")
+        print(f"\nDone. {clip_id - first_id} clips this run, in {sdir}")
         print(f"Next:  python check_quality.py {sdir}")
 
 

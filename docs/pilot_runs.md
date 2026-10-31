@@ -86,6 +86,42 @@ and very little data.
   (the actor stayed in the room). Next: ESP-to-ESP link, actor outside the room for `empty`,
   and a 1-minute empty-vs-walk check before any full session.
 
+## Pilot 5: small room, two sessions (Oct 31, 2026)
+
+- **Hardware:** a 2.4 GHz router in the same small room (channel 10, RSSI about −35 to −50 dBm)
+  as transmitter, two ESP32-S3 receivers. Both boards set to ignore routers weaker than −70 dBm.
+- **1-minute checks first** (30–45 s each of empty, wave, walk, sit at the final layout): every
+  action scored above the empty room, so the full sessions went ahead.
+- **Recording:** two sessions of 40 clips of 5 s (10 each of `empty`, `walk`, `sit`, `wave`),
+  shuffled, red/green screen, laptop ping on. All 80 clips flagged `ok`: about 500 packets per
+  clip on both boards, longest gap 0.19 s. `empty` = actor outside the room.
+- **Motion score** (mean over subcarriers of std / mean in a clip), median per class:
+
+| | empty | sit | wave | walk |
+|---|---|---|---|---|
+| session 1, board 0 | 0.088 | 0.189 | 0.195 | 0.322 |
+| session 1, board 1 | 0.048 | 0.112 | 0.122 | 0.227 |
+| session 2, board 0 | 0.106 | 0.170 | 0.143 | 0.290 |
+| session 2, board 1 | 0.095 | 0.101 | 0.127 | 0.219 |
+
+- **Sit vs wave** have similar scores but differ in speed: sit is one slow change (share of
+  energy above 1 Hz about 0.08), wave repeats about once a second (about 0.3–0.45).
+- **Baseline across sessions** (`train_baseline.py` features, 16 per clip; logistic regression;
+  trained on one whole session, tested on the other):
+
+| learned on → tested on | accuracy | |
+|---|---|---|
+| session 1 → session 2 | 77.5% (31/40) | walk 10/10, sit 9/10, wave 9/10, empty 3/10 |
+| session 2 → session 1 | 77.5% (31/40) | walk 10/10, empty 8/10, wave 7/10, sit 6/10 |
+| shuffled labels (20 tries) | 22.5% | chance is 25% |
+
+- With 40 test clips the 95% range is about 62–88%. Same room, same day, same person.
+- **Main error: empty vs sit.** Session 2's empty room was noisier (cause unknown), and a quiet,
+  slowly drifting signal looks like a sit.
+- **Live test:** `live.py` guesses from the last 5 s every 0.5 s. It gives the same answer as the
+  offline pipeline on all 80 recorded clips. In a first 2-minute live try, it rarely said `empty`.
+- Data: [release data-2026-10-31](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-10-31).
+
 ## Pilot code
 
 The ESP-NOW pilots used the scripts in [`espnow_pilot/`](../espnow_pilot/):

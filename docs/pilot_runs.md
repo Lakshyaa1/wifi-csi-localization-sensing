@@ -123,7 +123,8 @@ and very little data.
 - **Session 3** (42 clips recorded, 33 used): left out 2 clips with stalls, 1 with too few
   packets, 1 wrong action, and 5 `empty` clips that showed walking-level motion for the whole clip,
   cause unknown. Those 5 were chosen after looking at the motion score, so session 3's `empty`
-  results are optimistic. The new board read about 1.5–2× more relative change for every class.
+  results are optimistic: with those 5 clips back (38 clips), learning on sessions 1+2 gives 55.3%,
+  and 60.5% with per-session rescaling, instead of 63.6% and 75.8%. The new board read about 1.5–2× more relative change for every class.
 - **Each session tested after learning on the other two** (113 clips):
 
 | version | session 1 | session 2 | session 3 | all |
@@ -134,8 +135,9 @@ and very little data.
 | absolute + per-session rescaling (no labels) | 92.5% | 82.5% | 60.6% | 79.6% |
 
 - Four versions were compared on the same test clips, so small differences may be luck. These
-  are within one room; the cross-room test has not been done. The comparison script is not in
-  this repository yet.
+  are within one room; the cross-room test has not been done. `sensing/eval_sessions.py` reproduces
+  the relative-feature rows.
+- Walk: 29/29 when learning on one session (1→2, 2→1) and on 1+2→3, but 26/29 in the table above.
 - **Clock fix:** a board restart resets its clock, which broke the board-to-laptop time fit for
   resumed sessions. `board_time_to_host` now fits each stretch between restarts separately. Sessions
   1 and 2 had no restarts and did not change.

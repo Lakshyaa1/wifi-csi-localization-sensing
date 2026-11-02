@@ -1,16 +1,13 @@
 # Wi-Fi CSI sensing with ESP32-S3
 
-> **Work in progress.** The capture pipeline works on real hardware; a labelled dataset and
-> accuracy results are not available yet.
+Two low-cost ESP32-S3 boards measure Wi-Fi **channel state information (CSI)** from a standard
+router 100 times a second and use it to recognise activity (empty, sit, wave, walk). No camera, and
+nothing worn. The next question is cross-room: train in one room, measure the drop in another, and
+recover part of it from unlabelled data, as in [MU-SHOT-Fi](https://arxiv.org/abs/2605.01369)
+(Radwan & Tabassum).
 
-Device-free human activity recognition from Wi-Fi **channel state information (CSI)**, using a
-standard 2.4 GHz router as the transmitter and low-cost ESP32-S3 boards as receivers. Nothing is
-worn or carried by the person.
-
-The longer-term goal is to study **cross-room generalisation**: train in one room, measure the
-accuracy drop in a second room, and recover part of it with source-free domain adaptation
-(unlabelled data from the new room only), following the setting of
-[MU-SHOT-Fi](https://arxiv.org/abs/2605.01369) (Radwan & Tabassum).
+> **Early pilot:** one room, one person, 113 clips. A simple classifier gets 64–78% on unseen
+> sessions (chance 25%). The cross-room test has not been done yet.
 
 ## How it works
 
@@ -31,7 +28,7 @@ router (2.4 GHz, fixed channel)  ── ping replies, 100/s ──►  ESP32-S3 
 
 | Folder | Contents |
 |---|---|
-| [`sensing/`](sensing/) | Current pipeline: `record.py` (with `cue.py`, an on-screen cue window), `check_quality.py`, `build_dataset.py`, `train_baseline.py`, `live.py` (live guess on screen), shared DSP in `csi_common.py`, and `sim.py` (simulated boards for testing without hardware) |
+| [`sensing/`](sensing/) | Current pipeline: `record.py` (with `cue.py`, an on-screen cue window), `check_quality.py`, `build_dataset.py`, `train_baseline.py`, `eval_sessions.py` (tests on unseen sessions), `live.py` (live guess on screen), shared DSP in `csi_common.py`, and `sim.py` (simulated boards for testing without hardware) |
 | [`firmware/`](firmware/) | Patch for Espressif's [esp-csi](https://github.com/espressif/esp-csi) `csi_recv_router` example: receiver gain lock and Wi-Fi power save off |
 | [`docs/`](docs/) | Setup, data collection and pilot results |
 | [`espnow_pilot/`](espnow_pilot/) | Scripts and one recording from the earlier ESP32-to-ESP32 (ESP-NOW) pilots |
@@ -49,6 +46,11 @@ router (2.4 GHz, fixed channel)  ── ping replies, 100/s ──►  ESP32-S3 
 cd sensing
 python3 -m venv .venv && source .venv/bin/activate
 pip install numpy scipy matplotlib scikit-learn pyserial
+
+# reproduce the pilot results from the recorded data
+curl -LO https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/download/data-2026-10-31/csi_2026-10-31_session3.zip
+unzip csi_2026-10-31_session3.zip
+python eval_sessions.py csi_2026-10-31_session3/home_s1s2s3.npz
 
 # without hardware: simulated sessions, to check the pipeline runs
 python sim.py --out data --room A && python sim.py --out data --room B

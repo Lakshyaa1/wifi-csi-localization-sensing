@@ -98,12 +98,19 @@ def board_time_to_host(ts_us, host_t):
 
     Board timestamps are precise but have an unknown offset; host times are on a shared clock
     (so both boards line up) but jittery from USB buffering. A straight-line fit gives
-    precise *and* shared times."""
+    precise *and* shared times.
+
+    A board restart (e.g. a resumed session) resets its clock, so each stretch between
+    restarts gets its own fit."""
     tb = unwrap_ts(ts_us) / 1e6
-    if len(tb) < 10:
-        return host_t.copy()
-    a, b = np.polyfit(tb - tb[0], host_t, 1)
-    return a * (tb - tb[0]) + b
+    out = host_t.astype(np.float64).copy()
+    starts = np.r_[0, np.where(np.diff(tb) < 0)[0] + 1, len(tb)]
+    for s, e in zip(starts[:-1], starts[1:]):
+        if e - s < 10:
+            continue
+        a, b = np.polyfit(tb[s:e] - tb[s], host_t[s:e], 1)
+        out[s:e] = a * (tb[s:e] - tb[s]) + b
+    return out
 
 
 # ----------------------------------------------------------------------------- CSI -> amplitude

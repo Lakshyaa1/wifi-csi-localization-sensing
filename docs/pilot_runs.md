@@ -86,7 +86,7 @@ and very little data.
   (the actor stayed in the room). Next: ESP-to-ESP link, actor outside the room for `empty`,
   and a 1-minute empty-vs-walk check before any full session.
 
-## Pilot 5: small room, two sessions (Oct 31, 2026)
+## Pilot 5: small room, three sessions (Oct 31, 2026)
 
 - **Hardware:** a 2.4 GHz router in the same small room (channel 10, RSSI about −35 to −50 dBm)
   as transmitter, two ESP32-S3 receivers. Both boards set to ignore routers weaker than −70 dBm.
@@ -120,6 +120,25 @@ and very little data.
   slowly drifting signal looks like a sit.
 - **Live test:** `live.py` guesses from the last 5 s every 0.5 s. It gives the same answer as the
   offline pipeline on all 80 recorded clips. In a first 2-minute live try, it rarely said `empty`.
+- **Session 3** (42 clips recorded, 33 used): left out 2 clips with stalls, 1 with too few
+  packets, 1 wrong action, and 5 `empty` clips that showed walking-level motion for the whole clip,
+  cause unknown. Those 5 were chosen after looking at the motion score, so session 3's `empty`
+  results are optimistic. The new board read about 1.5–2× more relative change for every class.
+- **Each session tested after learning on the other two** (113 clips):
+
+| version | session 1 | session 2 | session 3 | all |
+|---|---|---|---|---|
+| relative features | 70.0% | 72.5% | 63.6% | 69.0% |
+| relative + per-session rescaling (no labels) | 77.5% | 82.5% | 75.8% | 78.8% |
+| absolute features | 77.5% | 82.5% | 60.6% | 74.3% |
+| absolute + per-session rescaling (no labels) | 92.5% | 82.5% | 60.6% | 79.6% |
+
+- Four versions were compared on the same test clips, so small differences may be luck. These
+  are within one room; the cross-room test has not been done. The comparison script is not in
+  this repository yet.
+- **Clock fix:** a board restart resets its clock, which broke the board-to-laptop time fit for
+  resumed sessions. `board_time_to_host` now fits each stretch between restarts separately. Sessions
+  1 and 2 had no restarts and did not change.
 - Data: [release data-2026-10-31](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-10-31).
 
 ## Pilot code

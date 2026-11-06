@@ -1,6 +1,6 @@
 # Pilot runs
 
-Four small pilot runs so far. None is a full experiment; together they shaped the current setup.
+Six pilot runs so far. None is a full experiment; together they shaped the current setup.
 
 ## Pilot 1: motion detection, one ESP-NOW link (Oct 2026)
 
@@ -142,6 +142,94 @@ and very little data.
   resumed sessions. `board_time_to_host` now fits each stretch between restarts separately. Sessions
   1 and 2 had no restarts and did not change.
 - Data: [release data-2026-10-31](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-10-31).
+
+## Pilot 6: a fourth session, a small CNN, label-free adaptation and live tests (Nov 2–6, 2026)
+
+Same room (H), layout, router and boards as pilot 5. Every number below comes from the saved
+outputs in [`results/2026-11-06/`](../results/2026-11-06/). CNN training is not exactly repeatable on
+this machine, so CNN numbers can move by about 2 points between runs.
+Data: [release data-2026-11-06](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-11-06).
+
+**Does more data help?** (`learning_curve.py`, sessions 1–3, each tested after learning on the others)
+
+| training clips | 10 | 20 | 40 | all (73–80) |
+|---|---|---|---|---|
+| logistic regression | 52.7% | 60.0% | 64.3% | 69.0% |
+
+- Still rising, so more sessions help. But the same 16 training clips give 71.2% when they come from
+  the test session itself and 54.7% when they come from another session: changes between sessions
+  cost more than having few clips.
+
+**Small CNN** (`train_cnn.py`; 88,740 weights; input 2 boards × 52 subcarriers × 250 steps of
+relative amplitude change at 50 Hz; 60 epochs, settings fixed in advance, last epoch scored)
+
+- Memorises 16 clips: 16/16 for all 5 seeds, so the model and data handling can learn.
+- Each session tested after learning on the other two: **68.7%** (±5.0 over 5 seeds; logistic
+  regression 69.0%), with 99.0% right on its own training clips. Shuffled labels: 24.2%.
+- Weak on sit: half of all sit clips were called empty, although sit clips move the signal clearly
+  more than empty ones (`sit_check.py`: a sit clip is stronger than an empty clip 92% of the time).
+  Neither leaving session 3 out nor keeping each pattern's peak (mean + max over time, 71.9%) fixed
+  sit, so the averaging version was kept.
+
+**Session 4** (Nov 6; 40 clips, 39 usable; one walk clip flagged for a 1.01 s stall)
+
+- Every action moved the signal more than in sessions 1–3 (old board, median: empty 0.199 vs
+  0.071–0.124, sit 0.316 vs 0.161–0.184), cause unknown.
+- Learned on sessions 1–3: logistic regression **41.0%** (16/39), CNN **56.4%** (5 seeds,
+  48.7–64.1%). Errors moved one step up: logistic regression called all 10 empty clips sit and all 10
+  sit clips walk.
+
+**Label-free adaptation to session 4** (`adapt.py`; Adam, lr 1e-4, weight decay 1e-4, 50 epochs, as
+in the MU-SHOT-Fi code's target stage; last epoch; labels used only for scoring)
+
+| | no adaptation | AdaBN | SHOT-IM |
+|---|---|---|---|
+| adapt and score on the same 39 clips | 56.4% | 67.2% | 87.7% |
+| adapt on one half, score the other half | 56.4% | 66.7% | **81.5%** (69.2–92.3%) |
+
+- Every seed improved, by 21–39 points held out. SHOT-IM changed the feature layers by 4–7% and the
+  final layer by 0.0%, as intended.
+- Session 4 is almost exactly balanced (10/10/9/10), which SHOT-IM's "stay varied" term assumes.
+  Robustness to unbalanced data is not tested yet.
+
+**Live tests**
+
+- A free 5-minute live run with the adapted CNN flickered between labels every few seconds. Sitting
+  still is not one of the actions (`sit` = sitting down and standing up), so it came out as empty or sit.
+- Scripted live test: 9 blocks of 30 s (empty, sit, walk, wave ×2, plus 1 block of sitting still),
+  scored on 5 s windows every 0.5 s (408 windows of the four actions; they overlap heavily, so they
+  count as far fewer independent samples).
+
+| model | windows right |
+|---|---|
+| logistic regression, sessions 1–4 | 46.8% |
+| CNN adapted to session 4 | 43.9% |
+| CNN, sessions 1–3, no adaptation | 54.5% |
+| CNN + AdaBN on the live test (no labels) | **68.6%** |
+| CNN + SHOT-IM on the live test (no labels) | 65.8% |
+| best calibration with labelled live blocks (logistic regression, sessions 1–4 + one block per action) | 69.4% |
+
+- The live test moved the signal less than session 4 (old board: sit 0.128, walk 0.223), so errors
+  moved one step down: walk was called wave (97% with the session-4 CNN). Adapting to the live test
+  fixed walk (98–99%). Empty vs sit stayed near 40/40, as the live sit blocks barely rose above empty.
+- Sitting still: 100% called empty by the session-4 CNN.
+
+**Conclusions so far**
+
+- The signal's overall strength drifts between sessions, even within one hour in one room, and both
+  models judge actions mostly by strength. Errors move up or down a whole step together.
+- Label-free adaptation undoes much of that on recorded clips (session 4: 56.4% → 81.5% held out).
+  This is the MU-SHOT-Fi effect between days in one room; the cross-room test is next.
+- A live classifier needs more than this: a class for sitting still or coarser classes, a way to
+  follow drift, and possibly better placement. A short labelled calibration did not clearly help.
+
+**Recording problems this pilot**
+
+- Each serial-port open restarts the boards; the first login to the router fails and can take
+  35 s, and many restarts in a few minutes made the router refuse them. `record.py` now waits up to
+  90 s (`--warmup`) and stops its ping if it gives up.
+- Stalls of 1–15 s per 30 s clip on both boards at once, on and off; not caused by the recorder,
+  and laptop ping times did not predict them. Two 1-minute checks were discarded for this reason.
 
 ## Pilot code
 

@@ -1,0 +1,33 @@
+113 clips, chance 25%
+  S1: {'empty': 10, 'sit': 10, 'walk': 10, 'wave': 10}
+  S2: {'empty': 10, 'sit': 10, 'walk': 10, 'wave': 10}
+  S3: {'empty': 5, 'sit': 10, 'walk': 9, 'wave': 9}
+
+1. Learning curve, plain features
+            10 clips: S1 56.0%  S2 52.1%  S3 49.5%  | all test clips 52.7%
+            20 clips: S1 62.6%  S2 61.3%  S3 55.2%  | all test clips 60.0%
+            40 clips: S1 66.7%  S2 67.3%  S3 57.9%  | all test clips 64.3%
+   all (73-80) clips: S1 70.0%  S2 72.5%  S3 63.6%  | all test clips 69.0%
+
+1b. Learning curve, per-session rescaling (no labels)
+            10 clips: S1 58.8%  S2 58.5%  S3 57.0%  | all test clips 58.2%
+            20 clips: S1 67.2%  S2 67.6%  S3 61.7%  | all test clips 65.7%
+            40 clips: S1 73.3%  S2 74.2%  S3 66.5%  | all test clips 71.7%
+   all (73-80) clips: S1 77.5%  S2 82.5%  S3 75.8%  | all test clips 78.8%
+
+2. 20 training clips (5 per class): one other session vs a mix of the two others
+  test S1, from S2 only:   65.1%  (middle 80% of draws 52.5%-80.0%, 40 test clips)
+  test S1, from S3 only:   44.1%  (middle 80% of draws 30.0%-57.5%, 40 test clips)
+  test S1, mix of both:    63.4%  (middle 80% of draws 50.0%-75.2%, 40 test clips)
+  test S2, from S1 only:   68.2%  (middle 80% of draws 57.5%-77.5%, 40 test clips)
+  test S2, from S3 only:   42.3%  (middle 80% of draws 35.0%-50.0%, 40 test clips)
+  test S2, mix of both:    62.2%  (middle 80% of draws 50.0%-75.0%, 40 test clips)
+  test S3, from S1 only:   62.2%  (middle 80% of draws 54.5%-69.7%, 33 test clips)
+  test S3, from S2 only:   46.4%  (middle 80% of draws 36.4%-57.6%, 33 test clips)
+  test S3, mix of both:    54.5%  (middle 80% of draws 42.4%-66.7%, 33 test clips)
+
+3. 16 training clips (4 per class): same test clips, learned from own vs another session
+  test S1: own session 84.6%, another session 55.0%  (24 test clips each draw)
+  test S2: own session 67.2%, another session 54.1%  (24 test clips each draw)
+  test S3: own session 61.9%, another session 54.9%  (17 test clips each draw)
+  average: own session 71.2%, another session 54.7%

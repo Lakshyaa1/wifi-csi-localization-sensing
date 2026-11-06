@@ -1,0 +1,12 @@
+152 clips, input (2, 52, 250), 88740 weights, non-finite values: 0, chance 25%
+final summary over time: mean
+settings: 60 epochs, batch 16, lr 0.001, weight decay 0.0001, dropout 0.3
+
+Learn on sessions [1, 2, 3] (113 clips), test on [4] (39 clips)
+  CNN per seed 53.8% 61.5% 48.7% 64.1% 53.8%, mean 56.4%
+  CNN confusion summed over seeds, rows true, columns predicted ['empty', 'sit', 'walk', 'wave']
+  empty  [13, 32, 0, 5] right 13/50
+  sit    [0, 6, 43, 1] right 6/50
+  walk   [0, 0, 45, 0] right 45/45
+  wave   [1, 1, 2, 46] right 46/50
+  logistic regression 41.0%, per class empty 0/10 sit 0/10 walk 9/9 wave 7/10

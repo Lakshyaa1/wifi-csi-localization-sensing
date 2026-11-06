@@ -127,6 +127,8 @@ def main():
     ap.add_argument("--gap-sec", type=float, default=8.0, help="pause between clips in --auto mode")
     ap.add_argument("--auto", action="store_true", help="run clips on a timer instead of pressing Enter")
     ap.add_argument("--no-shuffle", action="store_true", help="keep labels in plan order (not recommended)")
+    ap.add_argument("--warmup", type=float, default=90.0,
+                    help="seconds to wait for every board to stream (a board's router login can take ~40 s)")
     ap.add_argument("--min-rate", type=float, default=80.0, help="warn below this packet rate (per s)")
     ap.add_argument("--max-gap", type=float, default=0.3,
                     help="flag a clip if any board goes this long (s) without a packet")
@@ -199,17 +201,19 @@ def main():
     print(f"{len(labels)} clips to record" + (f" (already have {done})" if a.resume else ""))
 
     print(f"Session folder: {sdir}")
-    print("Warming up (waiting for every board to stream, up to 30 s) ...")
+    print(f"Warming up (waiting for every board to stream, up to {a.warmup:.0f} s) ...")
     t_wait = time.time()
     time.sleep(8)   # board resets on port open and needs ~6 s before CSI starts
-    while time.time() - t_wait < 30 and any(r.rate(5) < a.min_rate for r in readers):
+    while time.time() - t_wait < a.warmup and any(r.rate(5) < a.min_rate for r in readers):
         time.sleep(1)
     rates = "  ".join(f"{r.name}: {r.rate(5):.0f}/s" for r in readers)
     print(f"Packet rate  {rates}")
     if any(r.rate(5) < a.min_rate for r in readers):   # 5 s average; 1 s is too jumpy
         screen.show("idle", "boards too slow", info=rates)
         screen.close()
-        sys.exit(f"Stopping: below {a.min_rate:.0f}/s after 30 s. Check the router, distance, and that the board "
+        if pinger:
+            pinger.terminate()
+        sys.exit(f"Stopping: below {a.min_rate:.0f}/s after {a.warmup:.0f} s. Check the router, distance, and that the board "
                  "is connected (see README, 'Fixing a low packet rate').")
 
     idx_path = os.path.join(sdir, "index.csv")

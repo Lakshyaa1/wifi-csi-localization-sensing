@@ -1,0 +1,31 @@
+training the adapted CNN ...
+  seed 0 ready
+  seed 1 ready
+  seed 2 ready
+  seed 3 ready
+  seed 4 ready
+  block  0 empty    51 windows so far, 0 skipped here
+  block  1 sit      51 windows so far, 0 skipped here
+  block  2 walk     51 windows so far, 0 skipped here
+  block  3 walk    102 windows so far, 0 skipped here
+  block  4 wave     51 windows so far, 0 skipped here
+  block  5 empty   102 windows so far, 0 skipped here
+  block  6 wave    102 windows so far, 0 skipped here
+  block  7 seated   51 windows so far, 0 skipped here
+  block  8 sit     102 windows so far, 0 skipped here
+
+windows per block label: {'empty': 102, 'sit': 102, 'walk': 102, 'wave': 102, 'seated': 51}
+
+lr: 191/408 = 46.8% of windows right (known actions only)
+  true empty   -> empty 90%  wave 6%  sit 4%
+  true seated  -> empty 57%  wave 43%
+  true sit     -> empty 54%  wave 28%  sit 18%
+  true walk    -> wave 45%  sit 34%  walk 21%
+  true wave    -> wave 59%  sit 33%  empty 8%
+
+cnn: 179/408 = 43.9% of windows right (known actions only)
+  true empty   -> empty 95%  sit 4%  wave 1%
+  true seated  -> empty 100%
+  true sit     -> empty 80%  wave 10%  sit 10%
+  true walk    -> wave 97%  sit 3%
+  true wave    -> wave 71%  empty 29%

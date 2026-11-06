@@ -1,0 +1,9 @@
+calibrate on block 1 of each action (104 clips), score block 2 (204 windows)
+calibrate on block 2 of each action (104 clips), score block 1 (204 windows)
+
+method                               mean          range   right per action (both directions, all seeds)
+LR, calibration only                61.5%  54.9%-68.1%   empty 43%  sit 67%  walk 90%  wave 46%
+LR, sessions 1-4 + calibration      69.4%  58.3%-80.4%   empty 67%  sit 67%  walk 68%  wave 76%
+CNN, no calibration                 54.5%  42.2%-67.2%   empty 51%  sit 34%  walk 53%  wave 80%
+CNN + AdaBN (no labels)             66.0%  52.0%-82.8%   empty 36%  sit 68%  walk 93%  wave 67%
+CNN, fine-tuned on calibration      56.8%  48.0%-69.1%   empty 32%  sit 68%  walk 97%  wave 30%

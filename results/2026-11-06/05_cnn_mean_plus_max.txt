@@ -1,0 +1,32 @@
+113 clips, input (2, 52, 250), 88932 weights, non-finite values: 0, chance 25%
+final summary over time: meanmax
+settings: 60 epochs, batch 16, lr 0.001, weight decay 0.0001, dropout 0.3
+
+1. Overfit check: 4 clips per class from session 1, no dropout or weight decay
+  seed 0: training clips right 16/16
+  seed 1: training clips right 16/16
+  seed 2: training clips right 16/16
+  seed 3: training clips right 16/16
+  seed 4: training clips right 16/16
+  (12 s)
+
+2. Unseen sessions: test each session after learning on the other two
+  seed 0: 83/113 = 73.5%
+  seed 1: 84/113 = 74.3%
+  seed 2: 83/113 = 73.5%
+  seed 3: 80/113 = 70.8%
+  seed 4: 76/113 = 67.3%
+  S1: mean 77.5%, per seed 80.0% 72.5% 82.5% 77.5% 75.0%
+  S2: mean 74.5%, per seed 77.5% 82.5% 72.5% 75.0% 65.0%
+  S3: mean 61.8%, per seed 60.6% 66.7% 63.6% 57.6% 60.6%
+  all sessions: mean 71.9%, std across seeds 2.6%
+  training clips right at the end: mean 100.0%
+  confusion summed over seeds, rows true, columns predicted ['empty', 'sit', 'walk', 'wave']
+  empty  [115, 7, 1, 2]
+  sit    [90, 40, 9, 11]
+  walk   [0, 7, 137, 1]
+  wave   [16, 3, 12, 114]
+  (48 s)
+
+3. Shuffled training labels (should be near chance)
+  per seed 12.4% 29.2% 21.2% 27.4% 19.5%, mean 21.9%

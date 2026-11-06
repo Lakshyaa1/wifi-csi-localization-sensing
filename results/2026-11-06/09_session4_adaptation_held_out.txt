@@ -1,0 +1,22 @@
+learn on sessions [1, 2, 3] (113 clips), adapt to and test on [4] (39 clips)
+adaptation: Adam lr 0.0001, weight decay 0.0001, 50 epochs, batch 16
+  seed 0: adapted on 19 clips, scored on 20; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 0: adapted on 20 clips, scored on 19; SHOT-IM changed feature layers by 4.0%, final layer by 0.0%
+  seed 1: adapted on 19 clips, scored on 20; SHOT-IM changed feature layers by 4.1%, final layer by 0.0%
+  seed 1: adapted on 20 clips, scored on 19; SHOT-IM changed feature layers by 4.8%, final layer by 0.0%
+  seed 2: adapted on 19 clips, scored on 20; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 2: adapted on 20 clips, scored on 19; SHOT-IM changed feature layers by 4.6%, final layer by 0.0%
+  seed 3: adapted on 19 clips, scored on 20; SHOT-IM changed feature layers by 4.4%, final layer by 0.0%
+  seed 3: adapted on 20 clips, scored on 19; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 4: adapted on 20 clips, scored on 19; SHOT-IM changed feature layers by 4.7%, final layer by 0.0%
+  seed 4: adapted on 19 clips, scored on 20; SHOT-IM changed feature layers by 4.3%, final layer by 0.0%
+
+method         mean   std  per seed                  right per class (summed over seeds)
+source only   56.4%  5.6%  53.8% 61.5% 48.7% 64.1% 53.8%   empty 13/50  sit 6/50  walk 45/45  wave 46/50
+AdaBN         66.7%  8.7%  64.1% 56.4% 59.0% 76.9% 76.9%   empty 25/50  sit 22/50  walk 40/45  wave 43/50
+SHOT-IM       81.5%  8.8%  92.3% 82.1% 69.2% 89.7% 74.4%   empty 37/50  sit 35/50  walk 44/45  wave 43/50
+
+share of test clips given each label (no labels needed for this)
+  source only  empty 7%  sit 20%  walk 46%  wave 27%
+  AdaBN        empty 16%  sit 25%  walk 33%  wave 26%
+  SHOT-IM      empty 23%  sit 25%  walk 29%  wave 24%

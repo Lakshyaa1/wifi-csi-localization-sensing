@@ -1,0 +1,29 @@
+adaptation clips (unlabelled, all blocks): 54;  scored windows (known actions): 408
+  seed 0: SHOT-IM changed feature layers by 6.7%, final layer by 0.0%
+  seed 1: SHOT-IM changed feature layers by 6.9%, final layer by 0.0%
+  seed 2: SHOT-IM changed feature layers by 7.4%, final layer by 0.0%
+  seed 3: SHOT-IM changed feature layers by 6.8%, final layer by 0.0%
+  seed 4: SHOT-IM changed feature layers by 7.1%, final layer by 0.0%
+
+method         mean  per seed
+source only   54.5%  52.7% 50.2% 52.0% 55.4% 62.0%
+AdaBN         68.6%  66.7% 74.5% 63.5% 67.9% 70.6%
+SHOT-IM       65.8%  59.8% 74.3% 56.1% 71.6% 67.4%
+
+source only: rows true, share of windows given each label ['empty', 'sit', 'walk', 'wave']
+  empty  empty 51%  sit 27%  walk 0%  wave 22%
+  sit    empty 34%  sit 34%  walk 0%  wave 32%
+  walk   empty 0%  sit 5%  walk 53%  wave 43%
+  wave   empty 14%  sit 6%  walk 1%  wave 80%
+
+AdaBN: rows true, share of windows given each label ['empty', 'sit', 'walk', 'wave']
+  empty  empty 40%  sit 45%  walk 0%  wave 15%
+  sit    empty 22%  sit 62%  walk 2%  wave 14%
+  walk   empty 0%  sit 0%  walk 98%  wave 2%
+  wave   empty 12%  sit 10%  walk 3%  wave 75%
+
+SHOT-IM: rows true, share of windows given each label ['empty', 'sit', 'walk', 'wave']
+  empty  empty 39%  sit 40%  walk 0%  wave 21%
+  sit    empty 40%  sit 49%  walk 3%  wave 8%
+  walk   empty 0%  sit 0%  walk 99%  wave 1%
+  wave   empty 16%  sit 6%  walk 1%  wave 77%

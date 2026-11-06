@@ -1,0 +1,39 @@
+Does logistic regression also miss sit? (leave-one-session-out, same clips)
+  empty  right 11/25, called empty 11
+  sit    right 21/30, called empty 5
+  walk   right 26/29, called empty 0
+  wave   right 20/29, called empty 0
+  all 78/113
+
+CNN majority vote over seeds, sit clips:
+  called empty  16
+  called sit    9
+  called walk   2
+  called wave   3
+
+Peak strength by group
+  empty, all             n= 25  median 0.0867  (middle half 0.0665-0.1085)
+  empty, called empty    n= 23  median 0.0753  (middle half 0.0653-0.1007)
+  sit, called empty      n= 16  median 0.1769  (middle half 0.1634-0.2263)
+  sit, called sit        n=  9  median 0.2171  (middle half 0.1826-0.2394)
+  sit, called other      n=  5  median 0.2037  (middle half 0.1831-0.2384)
+
+By session (median peak; sit vs empty separation, 0.5 = none, 1.0 = perfect)
+  S1: empty 0.0653  sit 0.2311  separation 1.00  sit right (CNN) 1/10, called empty 9
+  S2: empty 0.0988  sit 0.1716  separation 0.94  sit right (CNN) 4/10, called empty 6
+  S3: empty 0.1214  sit 0.2131  separation 0.74  sit right (CNN) 4/10, called empty 1
+  all sessions together: separation 0.92
+
+Sit clips vs the same session's empty clips
+  stronger than 90% of their session's empty clips: 24/30
+    called empty: 14/16
+    called sit: 8/9
+
+How much of the clip is motion: peak / median strength
+  empty                median 1.26
+  sit, called empty    median 2.83
+  sit, called sit      median 2.51
+
+Time of peak in sit clips, seconds into the 5 s clip
+  called empty  1.3 3.4 3.4 3.5 3.6 3.7 3.9 4.0 4.2 4.3 4.3 4.4 4.4 4.4 4.5 4.5
+  called sit    1.2 2.5 2.6 2.6 3.7 3.8 3.9 3.9 4.2

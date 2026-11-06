@@ -66,8 +66,8 @@ class Board(threading.Thread):
                     board_t=board_time_to_host(ts_us, host_t))
 
 
-def window_features(boards, t1, clip_sec, fs, settle_sec=5.0):
-    """Features for the clip_sec ending at t1, or (None, reason)."""
+def window_clip(boards, t1, clip_sec, fs, settle_sec=5.0):
+    """Cleaned (boards, subcarriers, time) array for the clip_sec ending at t1, or (None, reason)."""
     t0 = t1 - clip_sec
     n = int(clip_sec * fs)
     arrs = []
@@ -84,7 +84,32 @@ def window_features(boards, t1, clip_sec, fs, settle_sec=5.0):
         if A is None or info["n_packets"] < 0.8 * n:
             return None, f"too few packets ({info['n_packets']} of {n})"
         arrs.append(A.T)
-    return features(np.stack(arrs), fs), "ok"
+    return np.stack(arrs), "ok"
+
+
+def train_cnn_adapted(dataset, train_sessions, adapt_sessions, seeds):
+    """CNN learned on train_sessions, then adapted with SHOT-IM to adapt_sessions' CSI (no labels).
+    Returns a function clip -> class probabilities, averaged over the seeds' models."""
+    import torch
+    from train_cnn import fit, prepare
+    from adapt import shot_im, predict_proba
+    d = np.load(dataset)
+    X, y_np, session = prepare(d["X"]), d["y"], d["session"]
+    S = sorted(set(session))
+    pick = lambda nums: np.where(np.isin(session, [S[i - 1] for i in nums]))[0]
+    tr, ad = pick(train_sessions), pick(adapt_sessions)
+    y = torch.from_numpy(y_np.astype(np.int64))
+    k = len(d["labels"])
+    models = []
+    for seed in range(seeds):
+        src, scale = fit(X[tr], y[tr], k, seed)
+        models.append((shot_im(src, scale, X[ad], seed), scale))     # uses X[ad] only, never its labels
+        print(f"  seed {seed} ready")
+
+    def proba(clip):
+        x = prepare(clip[None])
+        return np.mean([predict_proba(m, sc, x)[0].numpy() for m, sc in models], axis=0)
+    return proba
 
 
 def train(dataset):
@@ -102,12 +127,23 @@ def main():
     ap.add_argument("--ports", nargs="+", required=True)
     ap.add_argument("--baud", type=int, default=921600)
     ap.add_argument("--every", type=float, default=0.5, help="seconds between guesses")
+    ap.add_argument("--model", choices=["lr", "cnn"], default="lr",
+                    help="lr: logistic regression on all clips; cnn: CNN adapted with SHOT-IM (no labels)")
+    ap.add_argument("--train-sessions", type=int, nargs="+", default=[1, 2, 3], help="cnn: labelled sessions")
+    ap.add_argument("--adapt-sessions", type=int, nargs="+", default=[4], help="cnn: sessions to adapt to, unlabelled")
+    ap.add_argument("--seeds", type=int, default=5, help="cnn: models to average")
     a = ap.parse_args()
 
     clf, labels, fs, clip_sec, n_boards = train(a.dataset)
+    if a.model == "cnn":
+        print(f"training CNN on sessions {a.train_sessions}, adapting to {a.adapt_sessions} without labels ...")
+        cnn_proba = train_cnn_adapted(a.dataset, a.train_sessions, a.adapt_sessions, a.seeds)
+        predict = lambda clip: cnn_proba(clip)
+    else:
+        predict = lambda clip: clf.predict_proba(features(clip, fs)[None])[0]
     if len(a.ports) != n_boards:
         raise SystemExit(f"dataset has {n_boards} boards but {len(a.ports)} ports were given")
-    print(f"learned from {a.dataset}: classes {labels}, {clip_sec:g} s windows")
+    print(f"model {a.model}, from {a.dataset}: classes {labels}, {clip_sec:g} s windows")
     boards = [Board(p, a.baud) for p in a.ports]
     for b in boards:
         b.start()
@@ -117,11 +153,11 @@ def main():
     def guess_loop():
         while True:
             time.sleep(a.every)
-            F, why = window_features(boards, time.time() - 0.3, clip_sec, fs)   # 0.3 s margin for USB lag
-            if F is None:
+            clip, why = window_clip(boards, time.time() - 0.3, clip_sec, fs)   # 0.3 s margin for USB lag
+            if clip is None:
                 state.update(label="...", probs=None, note=why)
                 continue
-            p = clf.predict_proba(F[None])[0]
+            p = predict(clip)
             state.update(label=labels[int(p.argmax())], probs=p, note="")
             print(time.strftime("%H:%M:%S"), "  ".join(f"{l} {q:.2f}" for l, q in zip(labels, p)))
 

@@ -1,0 +1,25 @@
+152 clips rebuilt in 67 s
+
+1. average |phase difference| per 10 ms, median over clips (board 0 / board 1), radians
+  empty  0.0289 / 0.0138
+  sit    0.0382 / 0.0409
+  walk   0.1115 / 0.0680
+  wave   0.0332 / 0.0611
+
+2. logistic regression
+  leave one session out  16 usual features          63.8%   empty 16/35  sit 16/40  walk 36/38  wave 29/39
+  leave one session out  16 + 4 phase-difference    63.8%   empty 14/35  sit 19/40  walk 35/38  wave 29/39
+  leave one session out  4 phase-difference only    54.6%   empty 29/35  sit 11/40  walk 24/38  wave 19/39
+  sessions 1-3 -> 4      16 usual features          41.0%   empty 0/10  sit 0/10  walk 9/9  wave 7/10
+  sessions 1-3 -> 4      16 + 4 phase-difference    56.4%   empty 1/10  sit 5/10  walk 9/9  wave 7/10
+  sessions 1-3 -> 4      4 phase-difference only    64.1%   empty 7/10  sit 1/10  walk 9/9  wave 8/10
+
+3. CNN
+  leave one session out
+    amplitude                mean 65.5%, std 4.5%, per seed 69.1% 66.4% 58.6% 71.1% 62.5%   empty 124/175  sit 62/200  walk 160/190  wave 152/195
+    phase difference         mean 44.6%, std 2.9%, per seed 46.1% 45.4% 42.8% 40.1% 48.7%   empty 111/175  sit 46/200  walk 91/190  wave 91/195
+    amplitude + phase diff   mean 60.1%, std 3.9%, per seed 63.2% 60.5% 65.1% 53.9% 57.9%   empty 125/175  sit 50/200  walk 127/190  wave 155/195
+  sessions 1-3 -> 4
+    amplitude                mean 56.4%, std 5.6%, per seed 53.8% 61.5% 48.7% 64.1% 53.8%   empty 13/50  sit 6/50  walk 45/45  wave 46/50
+    phase difference         mean 46.2%, std 2.8%, per seed 46.2% 48.7% 41.0% 46.2% 48.7%   empty 20/50  sit 1/50  walk 41/45  wave 28/50
+    amplitude + phase diff   mean 46.2%, std 7.4%, per seed 53.8% 35.9% 51.3% 38.5% 51.3%   empty 14/50  sit 2/50  walk 36/45  wave 38/50

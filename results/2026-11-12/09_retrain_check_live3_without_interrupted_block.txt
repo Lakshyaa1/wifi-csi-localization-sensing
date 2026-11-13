@@ -1,0 +1,14 @@
+Part 1 - learn on all clips of the set, replay each cued session (5 seeds)
+  S1-4: 152 clips, models ready
+  S1-6: 207 clips, models ready
+
+[20261112_191606_roomHlive3] 531 scored windows; mix: empty 76%  sit 8%  walk 8%  wave 8%
+  train input method        right  range over seeds  per-activity avg   per activity
+  S1-4  amp   source        84.4%    75.0%-90.2%             56.6%   empty 97%  sit 98%  walk 18%  wave 13%
+  S1-4  amp   AdaBN blend   89.4%    76.3%-96.4%             77.3%   empty 95%  sit 100%  walk 68%  wave 47%
+  S1-4  spec  source        78.9%    70.4%-84.4%             71.9%   empty 82%  sit 85%  walk 37%  wave 84%
+  S1-4  spec  AdaBN blend   67.6%    62.5%-74.4%             73.9%   empty 65%  sit 83%  walk 68%  wave 80%
+  S1-6  amp   source        98.2%    96.6%-99.1%             95.7%   empty 99%  sit 100%  walk 100%  wave 83%
+  S1-6  amp   AdaBN blend   96.2%    94.2%-97.7%             94.7%   empty 97%  sit 100%  walk 100%  wave 82%
+  S1-6  spec  source        86.9%    71.0%-94.2%             86.6%   empty 87%  sit 96%  walk 78%  wave 86%
+  S1-6  spec  AdaBN blend   75.0%    64.4%-82.3%             84.5%   empty 71%  sit 98%  walk 95%  wave 75%

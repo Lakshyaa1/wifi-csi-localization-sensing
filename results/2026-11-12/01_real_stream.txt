@@ -1,0 +1,9 @@
+590 windows; mix: empty 82%  sit 7%  walk 7%  wave 4%
+  method          right  range over seeds  per-activity avg   per activity   | share of answers
+  source          84.3%    60.7%-92.7%             67.5%   empty 91%  sit 79%  walk 0%  wave 100%   | empty 77%  sit 13%  walk 0%  wave 10%
+  AdaBN all       36.1%    33.4%-38.5%             65.5%   empty 26%  sit 76%  walk 100%  wave 60%   | empty 22%  sit 31%  walk 11%  wave 36%
+  AdaBN recent    30.1%    26.8%-33.7%             47.7%   empty 24%  sit 50%  walk 84%  wave 33%   | empty 20%  sit 33%  walk 19%  wave 29%
+  AdaBN running   58.4%    54.6%-63.4%             60.1%   empty 57%  sit 55%  walk 90%  wave 39%   | empty 47%  sit 23%  walk 14%  wave 16%
+  AdaBN blend     86.5%    67.8%-93.2%             89.3%   empty 86%  sit 92%  walk 79%  wave 100%   | empty 71%  sit 18%  walk 6%  wave 5%
+  TENT            16.4%    14.4%-21.5%             31.7%   empty 11%  sit 58%  walk 31%  wave 27%   | empty 10%  sit 49%  walk 9%  wave 32%
+  T3A             85.2%    64.4%-92.4%             70.5%   empty 91%  sit 91%  walk 0%  wave 100%   | empty 76%  sit 14%  walk 0%  wave 11%

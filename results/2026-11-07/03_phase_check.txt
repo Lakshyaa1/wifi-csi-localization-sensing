@@ -1,0 +1,20 @@
+152 clips rebuilt in 67 s; non-finite phase values 0
+amplitude rebuilt vs dataset: max relative difference median 9.37e-08, worst 1.76e-07
+per-packet line slope removed: median 0.05 rad per subcarrier
+
+how much each signal moves, median over clips (board 0 / board 1)
+  action       phase (rad)     amplitude (rel)
+  empty     0.191 /  0.097     0.101 /   0.096
+  sit       0.469 /  0.434     0.197 /   0.138
+  walk      0.643 /  0.488     0.340 /   0.262
+  wave      0.198 /  0.422     0.164 /   0.149
+
+leave one session out
+  amplitude          mean 65.5%, std 4.5%, per seed 69.1% 66.4% 58.6% 71.1% 62.5%   empty 124/175  sit 62/200  walk 160/190  wave 152/195  (57 s)
+  phase              mean 50.0%, std 1.2%, per seed 51.3% 48.0% 50.0% 51.3% 49.3%   empty 108/175  sit 63/200  walk 110/190  wave 99/195  (55 s)
+  amplitude + phase  mean 60.7%, std 1.6%, per seed 57.9% 61.8% 60.5% 62.5% 60.5%   empty 127/175  sit 61/200  walk 122/190  wave 151/195  (70 s)
+
+sessions 1-3 -> 4
+  amplitude          mean 56.4%, std 5.6%, per seed 53.8% 61.5% 48.7% 64.1% 53.8%   empty 13/50  sit 6/50  walk 45/45  wave 46/50  (14 s)
+  phase              mean 41.5%, std 5.7%, per seed 41.0% 30.8% 43.6% 46.2% 46.2%   empty 7/50  sit 4/50  walk 36/45  wave 34/50  (14 s)
+  amplitude + phase  mean 54.9%, std 4.2%, per seed 56.4% 61.5% 53.8% 48.7% 53.8%   empty 28/50  sit 0/50  walk 40/45  wave 39/50  (18 s)

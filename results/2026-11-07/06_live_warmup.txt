@@ -1,0 +1,16 @@
+459 windows over 350 s; blocks: empty, sit, walk, walk, wave, empty, wave, seated, sit
+
+warm-up 0 s: 408 scored windows
+  source           mean 45.5%, per seed 50.7% 47.8% 43.6% 51.5% 34.1%   empty 68%  sit 42%  walk 4%  wave 68%
+  streaming AdaBN  mean 63.6%, per seed 67.2% 68.1% 67.2% 59.3% 56.1%   empty 36%  sit 74%  walk 70%  wave 74%
+  full AdaBN       mean 65.6%, per seed 69.1% 68.1% 63.5% 68.9% 58.6%   empty 48%  sit 61%  walk 77%  wave 77%
+
+warm-up 60 s: 327 scored windows
+  source           mean 43.5%, per seed 49.5% 49.8% 41.3% 46.5% 30.6%   empty 69%  sit 47%  walk 4%  wave 68%
+  streaming AdaBN  mean 67.5%, per seed 74.3% 71.6% 70.6% 63.3% 57.8%   empty 40%  sit 74%  walk 70%  wave 74%
+  full AdaBN       mean 68.6%, per seed 73.7% 73.1% 70.9% 67.3% 57.8%   empty 39%  sit 66%  walk 77%  wave 77%
+
+warm-up 120 s: 255 scored windows
+  source           mean 52.7%, per seed 63.5% 61.6% 52.9% 54.5% 31.0%   empty 69%  sit 51%  walk 8%  wave 68%
+  streaming AdaBN  mean 65.6%, per seed 71.0% 68.2% 70.6% 60.0% 58.0%   empty 40%  sit 75%  walk 65%  wave 74%
+  full AdaBN       mean 68.3%, per seed 74.9% 70.6% 71.4% 64.7% 60.0%   empty 39%  sit 71%  walk 78%  wave 77%

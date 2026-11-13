@@ -2,12 +2,14 @@
 
 Two low-cost ESP32-S3 boards measure Wi-Fi **channel state information (CSI)** from a standard
 router 100 times a second and use it to recognise activity (empty, sit, wave, walk). No camera, and
-nothing worn. The next question is cross-room: train in one room, measure the drop in another, and
-recover part of it from unlabelled data, as in [MU-SHOT-Fi](https://arxiv.org/abs/2605.01369)
-(Radwan & Tabassum).
+nothing worn. The question studied: when a model trained in one room is used in another, does
+label-free adaptation fix it, as in [MU-SHOT-Fi](https://arxiv.org/abs/2605.01369)
+(Radwan & Tabassum), and does it still work when the new room's data is realistic (mostly empty)?
 
-> **Early pilot:** one room, one person, 113 clips. A simple classifier gets 64–78% on unseen
-> sessions (chance 25%). The cross-room test has not been done yet.
+> **Pilot results:** one person, two rooms, 280 clips. In a new room the model gets 74.8% with no
+> adaptation and 96.4% after label-free adaptation (SHOT-IM) on balanced unlabelled clips. Adapting
+> on a mostly-empty recording instead drops it to 43.8%, below the unadapted 90.1%. See
+> [Status](#status).
 
 ## How it works
 
@@ -75,7 +77,9 @@ With hardware, follow the [data collection guide](docs/data_collection.md).
 | Router-based activity session (pilot 4) | 80 clips recorded; walking not separable from an empty room with a router transmitter ([details](docs/pilot_runs.md#pilot-4-router-activity-session-oct-29-2026)) |
 | Router activity sessions, small room (pilot 5) | 3 sessions, 113 usable clips, 2 receivers. Tested on a session not used for learning: **64–78%** (chance 25%), one room, one person ([details](docs/pilot_runs.md#pilot-5-small-room-two-sessions-oct-31-2026), [data](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-10-31)) |
 | Fourth session, small CNN, label-free adaptation (pilot 6) | Session 4 (a new day): models learned on sessions 1–3 drop to 41.0% (logistic regression) and 56.4% (CNN). Label-free adaptation (SHOT-IM) recovers **81.5%** on held-out clips. One room, one person ([details](docs/pilot_runs.md#pilot-6-a-fourth-session-a-small-cnn-label-free-adaptation-and-live-tests-nov-26-2026), [outputs](results/2026-11-06/), [data](https://github.com/Lakshyaa1/wifi-csi-localization-sensing/releases/tag/data-2026-11-06)) |
-| Live classifier | Not reliable yet: 44–69% of 5 s windows in a scripted live test; sitting still looks like an empty room |
-| Cross-room drop and source-free adaptation | Next: a second room |
+| Same room, six sessions (Nov 12) | 207 clips. Each session tested by a model learned on the other five: **72.7%** (small CNN, 5 seeds; empty 75%, sit 32%, walk 92%, wave 84%) ([outputs](results/2026-11-12/)) |
+| Live classifier, same room (Nov 12) | Two scripted live runs, about 80% of windows empty, model from sessions 1–4. No adaptation: 84.1% and 86.7% of 5 s windows, but only 39.5% and 54.1% averaged per activity. Blending learned and running batch-norm averages: 93.0% and 93.8% (74.3% and 84.6% per activity) |
+| New room, balanced clips (Nov 13) | Model from six sessions in the first room, 73 clips in a second room. Adapt on one session without labels, test on the other: no adaptation **74.8%** (sit 18%), AdaBN 84.4%, SHOT-IM **96.4%** (sit 93%) ([outputs](results/2026-11-13/)) |
+| New room, mostly-empty recording (Nov 13) | 403 windows, 77% empty. No adaptation 90.1% (sit 6%). Adapting on the recording itself: AdaBN 40.9%, SHOT-IM 43.8%. SHOT-IM on the balanced clips, then left unchanged: **97.5%**. All new-room data is from one night; another day is not yet tested |
 
 ![Pilot 1: still vs motion](espnow_pilot/plots/first_motion_static_vs_motion.png)

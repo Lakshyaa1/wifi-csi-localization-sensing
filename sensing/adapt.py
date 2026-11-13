@@ -78,6 +78,8 @@ def main():
     ap.add_argument("--seeds", type=int, default=5)
     ap.add_argument("--holdout", action="store_true",
                     help="adapt on half of the test clips and score the other half, then swap the halves")
+    ap.add_argument("--by-session", action="store_true",
+                    help="two test sessions: adapt on one and score the other, then swap")
     a = ap.parse_args()
     d = np.load(a.dataset)
     X, y_np, session = prepare(d["X"]), d["y"], d["session"]
@@ -98,7 +100,10 @@ def main():
     share = {m: np.zeros(k) for m in methods}
     for seed in range(a.seeds):
         src, scale = fit(X[tr], y[tr], k, seed)
-        if a.holdout:
+        if a.by_session:
+            first = session[te] == S[a.test[0] - 1]
+            folds = [(first, ~first), (~first, first)]
+        elif a.holdout:
             # random halves, balanced by class; the split uses labels only to pick clips, never to adapt
             rng = np.random.default_rng(100 + seed)
             half = np.zeros(len(te), bool)

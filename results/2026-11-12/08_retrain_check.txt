@@ -1,0 +1,51 @@
+Part 1 - learn on all clips of the set, replay each cued session (5 seeds)
+  S1-4: 152 clips, models ready
+  S1-6: 207 clips, models ready
+
+[20261106_155515_roomHlive] 408 scored windows; mix: empty 25%  sit 25%  walk 25%  wave 25%
+  train input method        right  range over seeds  per-activity avg   per activity
+  S1-4  amp   source        45.5%    34.1%-51.5%             45.5%   empty 68%  sit 42%  walk 4%  wave 68%
+  S1-4  amp   AdaBN blend   56.9%    46.8%-64.5%             56.9%   empty 64%  sit 62%  walk 29%  wave 73%
+  S1-4  spec  source        55.7%    45.6%-67.9%             55.7%   empty 64%  sit 54%  walk 41%  wave 64%
+  S1-4  spec  AdaBN blend   58.7%    49.8%-68.9%             58.7%   empty 58%  sit 58%  walk 53%  wave 66%
+  S1-6  amp   source        52.7%    42.2%-61.3%             52.7%   empty 39%  sit 34%  walk 46%  wave 92%
+  S1-6  amp   AdaBN blend   66.1%    61.3%-72.5%             66.1%   empty 37%  sit 58%  walk 79%  wave 90%
+  S1-6  spec  source        63.5%    49.8%-70.8%             63.5%   empty 58%  sit 66%  walk 53%  wave 77%
+  S1-6  spec  AdaBN blend   67.2%    60.8%-72.5%             67.2%   empty 56%  sit 65%  walk 70%  wave 77%
+
+[20261112_175734_roomHreal] 590 scored windows; mix: empty 82%  sit 7%  walk 7%  wave 4%
+  train input method        right  range over seeds  per-activity avg   per activity
+  S1-4  amp   source        84.3%    60.7%-92.7%             67.5%   empty 91%  sit 79%  walk 0%  wave 100%
+  S1-4  amp   AdaBN blend   86.5%    67.8%-93.2%             89.3%   empty 86%  sit 92%  walk 79%  wave 100%
+  S1-4  spec  source        79.9%    70.3%-87.8%             78.2%   empty 81%  sit 90%  walk 46%  wave 95%
+  S1-4  spec  AdaBN blend   69.7%    63.2%-75.4%             80.9%   empty 67%  sit 95%  walk 70%  wave 92%
+  S1-6  amp   source        95.9%    90.8%-98.8%             90.9%   empty 98%  sit 91%  walk 74%  wave 100%
+  S1-6  amp   AdaBN blend   84.5%    74.2%-89.8%             93.1%   empty 82%  sit 90%  walk 100%  wave 100%
+  S1-6  spec  source        88.2%    74.1%-95.3%             88.7%   empty 88%  sit 94%  walk 78%  wave 94%
+  S1-6  spec  AdaBN blend   77.0%    69.2%-85.3%             89.0%   empty 73%  sit 98%  walk 96%  wave 90%
+
+[20261112_181925_roomHlive2] 612 scored windows; mix: empty 79%  sit 7%  walk 7%  wave 7%
+  train input method        right  range over seeds  per-activity avg   per activity
+  S1-4  amp   source        82.8%    80.1%-85.0%             41.3%   empty 99%  sit 52%  walk 0%  wave 14%
+  S1-4  amp   AdaBN blend   92.0%    85.8%-95.3%             75.2%   empty 98%  sit 96%  walk 60%  wave 46%
+  S1-4  spec  source        78.9%    71.7%-88.6%             80.1%   empty 78%  sit 85%  walk 59%  wave 98%
+  S1-4  spec  AdaBN blend   68.8%    63.1%-78.3%             83.4%   empty 63%  sit 86%  walk 85%  wave 99%
+  S1-6  amp   source        96.8%    92.6%-99.2%             88.2%   empty 100%  sit 100%  walk 64%  wave 90%
+  S1-6  amp   AdaBN blend   97.6%    96.4%-98.2%             93.9%   empty 99%  sit 100%  walk 100%  wave 77%
+  S1-6  spec  source        82.9%    61.8%-95.6%             88.0%   empty 81%  sit 97%  walk 79%  wave 95%
+  S1-6  spec  AdaBN blend   70.5%    58.3%-80.4%             87.9%   empty 64%  sit 98%  walk 92%  wave 98%
+
+[20261112_191606_roomHlive3] 612 scored windows; mix: empty 79%  sit 7%  walk 7%  wave 7%
+  train input method        right  range over seeds  per-activity avg   per activity
+  S1-4  amp   source        82.7%    71.7%-88.6%             55.5%   empty 93%  sit 98%  walk 18%  wave 13%
+  S1-4  amp   AdaBN blend   86.1%    72.7%-93.5%             77.0%   empty 90%  sit 100%  walk 69%  wave 50%
+  S1-4  spec  source        75.3%    67.2%-81.0%             70.6%   empty 77%  sit 85%  walk 37%  wave 84%
+  S1-4  spec  AdaBN blend   64.1%    60.1%-69.6%             72.9%   empty 61%  sit 82%  walk 68%  wave 81%
+  S1-6  amp   source        94.8%    93.5%-95.6%             94.6%   empty 95%  sit 100%  walk 100%  wave 83%
+  S1-6  amp   AdaBN blend   91.4%    88.7%-93.6%             93.2%   empty 91%  sit 100%  walk 100%  wave 82%
+  S1-6  spec  source        82.1%    66.3%-89.5%             85.1%   empty 81%  sit 96%  walk 78%  wave 86%
+  S1-6  spec  AdaBN blend   70.5%    60.6%-77.8%             83.4%   empty 66%  sit 98%  walk 95%  wave 76%
+
+Part 2 - S1-6: leave one training session out, no adaptation (5 seeds)
+  amp    72.7% (67.6%-75.8%)   empty 75%  sit 32%  walk 92%  wave 84%   by session: 76% 71% 75% 42% 89% 95%
+  spec   68.6% (63.8%-70.5%)   empty 74%  sit 46%  walk 74%  wave 77%   by session: 85% 73% 62% 50% 76% 64%

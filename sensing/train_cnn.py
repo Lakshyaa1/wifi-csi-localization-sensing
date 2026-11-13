@@ -53,7 +53,10 @@ def prepare(X):
     return torch.from_numpy(X[..., ::2].copy())
 
 
-def fit(X, y, classes, seed, epochs=EPOCHS, batch=BATCH, dropout=DROPOUT, weight_decay=WEIGHT_DECAY):
+def fit(X, y, classes, seed, epochs=EPOCHS, batch=BATCH, dropout=DROPOUT, weight_decay=WEIGHT_DECAY,
+        strength_aug=None):
+    """strength_aug=(lo, hi): multiply each training clip's signal, per board, by a random factor
+    drawn evenly on a log scale between lo and hi (e.g. (0.5, 2)), fresh every epoch."""
     torch.manual_seed(seed)
     scale = X.std().item()
     model = SmallCNN(X.shape[1], classes, dropout)
@@ -66,8 +69,12 @@ def fit(X, y, classes, seed, epochs=EPOCHS, batch=BATCH, dropout=DROPOUT, weight
             b = order[i:i + batch]
             if len(b) < 2:      # batch norm needs at least two clips
                 continue
+            xb = X[b]
+            if strength_aug:
+                lo, hi = np.log(strength_aug[0]), np.log(strength_aug[1])
+                xb = xb * torch.exp(lo + (hi - lo) * torch.rand(len(b), xb.shape[1], 1, 1))
             opt.zero_grad()
-            loss_fn(model(X[b] / scale), y[b]).backward()
+            loss_fn(model(xb / scale), y[b]).backward()
             opt.step()
     return model, scale
 

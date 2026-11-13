@@ -1,0 +1,11 @@
+learn on sessions [1, 2, 3, 4, 5, 6] (207 clips); calibration clips: sessions [7, 8] (73 clips, labels not used)
+models ready
+
+[20261113_010335_roomBlive1] 403 windows; mix: empty 77%  sit 6%  walk 7%  wave 9%
+  method          accuracy  range over seeds  per-activity avg   per activity                                share of windows given each label
+  source             90.1%    83.9%-94.0%             75.1%   empty  94%  sit   6%  walk 100%  wave 100%     empty 78%  sit 2%  walk 8%  wave 13%
+  AdaBN all          40.9%    29.5%-47.4%             57.0%   empty  36%  sit  91%  walk  98%  wave   3%     empty 28%  sit 26%  walk 19%  wave 27%
+  AdaBN blend        85.9%    76.4%-96.3%             79.1%   empty  89%  sit  61%  walk 100%  wave  67%     empty 70%  sit 9%  walk 11%  wave 10%
+  SHOT-IM stream     43.8%    43.2%-44.7%             37.2%   empty  47%  sit   0%  walk 100%  wave   2%     empty 36%  sit 21%  walk 22%  wave 20%
+  AdaBN calib        89.7%    76.2%-97.0%             87.3%   empty  90%  sit  61%  walk  99%  wave 100%     empty 72%  sit 9%  walk 7%  wave 12%
+  SHOT-IM calib      97.5%    97.0%-98.3%             99.2%   empty  97%  sit 100%  walk 100%  wave 100%     empty 75%  sit 8%  walk 7%  wave 9%

@@ -1,0 +1,20 @@
+learn on sessions [1, 2, 3, 4, 5, 6] (207 clips), adapt to and test on [7] (37 clips)
+adaptation: Adam lr 0.0001, weight decay 0.0001, 50 epochs, batch 16
+/home/lakshya-lalwani/projects/wifi-csi-localization-sensing/sensing/adapt.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return float((num / den).sqrt())
+  seed 0: adapted on 37 clips, scored on 37; SHOT-IM changed feature layers by 4.3%, final layer by 0.0%
+  seed 1: adapted on 37 clips, scored on 37; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 2: adapted on 37 clips, scored on 37; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 3: adapted on 37 clips, scored on 37; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 4: adapted on 37 clips, scored on 37; SHOT-IM changed feature layers by 5.1%, final layer by 0.0%
+
+method         mean   std  per seed                  right per class (summed over seeds)
+source only   73.0%  3.8%  67.6% 70.3% 78.4% 73.0% 75.7%   empty 43/45  sit 4/50  walk 50/50  wave 38/40
+AdaBN         88.6%  6.0%  78.4% 97.3% 89.2% 89.2% 89.2%   empty 45/45  sit 34/50  walk 48/50  wave 37/40
+SHOT-IM       98.4%  2.2%  100.0% 100.0% 94.6% 97.3% 100.0%   empty 45/45  sit 47/50  walk 50/50  wave 40/40
+
+share of test clips given each label (no labels needed for this)
+  source only  empty 32%  sit 2%  walk 34%  wave 31%
+  AdaBN        empty 28%  sit 19%  walk 29%  wave 24%
+  SHOT-IM      empty 25%  sit 25%  walk 27%  wave 23%

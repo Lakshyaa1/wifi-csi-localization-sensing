@@ -1,0 +1,41 @@
+Part 1 - learn on all training clips, replay each session in order (5 seeds)
+  (20 models in 105 s)
+
+[20261106_155515_roomHlive] 408 scored windows; mix: empty 25%  sit 25%  walk 25%  wave 25%
+  input   method        right  per-activity avg   per activity
+  none    source        45.5%             45.5%   empty 68%  sit 42%  walk 4%  wave 68%
+  none    AdaBN blend   56.9%             56.9%   empty 64%  sit 62%  walk 29%  wave 73%
+  floor   source        65.5%             65.5%   empty 79%  sit 28%  walk 84%  wave 71%
+  floor   AdaBN blend   75.0%             75.0%   empty 89%  sit 59%  walk 84%  wave 68%
+  median  source        62.4%             62.4%   empty 50%  sit 23%  walk 93%  wave 84%
+  median  AdaBN blend   62.4%             62.4%   empty 63%  sit 36%  walk 84%  wave 67%
+  top     source        55.2%             55.2%   empty 21%  sit 30%  walk 82%  wave 88%
+  top     AdaBN blend   49.6%             49.6%   empty 45%  sit 42%  walk 47%  wave 64%
+
+[20261112_175734_roomHreal] 590 scored windows; mix: empty 82%  sit 7%  walk 7%  wave 4%
+  input   method        right  per-activity avg   per activity
+  none    source        84.3%             67.5%   empty 91%  sit 79%  walk 0%  wave 100%
+  none    AdaBN blend   86.5%             89.3%   empty 86%  sit 92%  walk 79%  wave 100%
+  floor   source        65.7%             58.0%   empty 68%  sit 22%  walk 100%  wave 43%
+  floor   AdaBN blend   55.5%             51.3%   empty 56%  sit 22%  walk 100%  wave 28%
+  median  source        19.3%             33.0%   empty 13%  sit 18%  walk 100%  wave 1%
+  median  AdaBN blend   24.7%             44.0%   empty 18%  sit 20%  walk 100%  wave 38%
+  top     source        73.9%             86.9%   empty 70%  sit 78%  walk 100%  wave 100%
+  top     AdaBN blend   70.2%             85.1%   empty 66%  sit 94%  walk 80%  wave 100%
+
+[20261112_181925_roomHlive2] 612 scored windows; mix: empty 79%  sit 7%  walk 7%  wave 7%
+  input   method        right  per-activity avg   per activity
+  none    source        82.8%             41.3%   empty 99%  sit 52%  walk 0%  wave 14%
+  none    AdaBN blend   92.0%             75.2%   empty 98%  sit 96%  walk 60%  wave 46%
+  floor   source        73.4%             59.9%   empty 79%  sit 44%  walk 99%  wave 18%
+  floor   AdaBN blend   74.4%             62.2%   empty 79%  sit 56%  walk 100%  wave 14%
+  median  source        23.0%             31.7%   empty 20%  sit 7%  walk 100%  wave 0%
+  median  AdaBN blend   24.3%             34.7%   empty 20%  sit 19%  walk 100%  wave 0%
+  top     source        74.2%             81.9%   empty 71%  sit 80%  walk 100%  wave 77%
+  top     AdaBN blend   74.7%             79.9%   empty 73%  sit 96%  walk 96%  wave 55%
+
+Part 2 - leave one training session out, no adaptation (5 seeds); test session normalised over itself
+  none     65.5% (58.6%-71.1%)   empty 71%  sit 31%  walk 84%  wave 78%
+  floor    52.5% (50.0%-54.6%)   empty 66%  sit 25%  walk 72%  wave 50%
+  median   64.6% (62.5%-67.1%)   empty 77%  sit 38%  walk 72%  wave 75%
+  top      69.1% (62.5%-73.7%)   empty 73%  sit 32%  walk 82%  wave 91%

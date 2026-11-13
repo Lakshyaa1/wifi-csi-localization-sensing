@@ -1,0 +1,28 @@
+input shape (152, 2, 25, 41)
+Part 1 - learn on all training clips, replay each session in order (5 seeds)
+  (10 models in 10 s)
+
+[20261106_155515_roomHlive] 408 scored windows; mix: empty 25%  sit 25%  walk 25%  wave 25%
+  input      method        right  range over seeds  per-activity avg   per activity
+  spec       source        55.7%    45.6%-67.9%             55.7%   empty 64%  sit 54%  walk 41%  wave 64%
+  spec       AdaBN blend   58.7%    49.8%-68.9%             58.7%   empty 58%  sit 58%  walk 53%  wave 66%
+  spec-level source        51.7%    40.4%-57.4%             51.7%   empty 36%  sit 59%  walk 19%  wave 92%
+  spec-level AdaBN blend   58.9%    52.2%-65.9%             58.9%   empty 45%  sit 61%  walk 44%  wave 85%
+
+[20261112_175734_roomHreal] 590 scored windows; mix: empty 82%  sit 7%  walk 7%  wave 4%
+  input      method        right  range over seeds  per-activity avg   per activity
+  spec       source        79.9%    70.3%-87.8%             78.2%   empty 81%  sit 90%  walk 46%  wave 95%
+  spec       AdaBN blend   69.7%    63.2%-75.4%             80.9%   empty 67%  sit 95%  walk 70%  wave 92%
+  spec-level source        35.3%    14.9%-53.4%             58.0%   empty 30%  sit 90%  walk 12%  wave 100%
+  spec-level AdaBN blend   39.6%    29.8%-50.5%             65.2%   empty 33%  sit 91%  walk 39%  wave 98%
+
+[20261112_181925_roomHlive2] 612 scored windows; mix: empty 79%  sit 7%  walk 7%  wave 7%
+  input      method        right  range over seeds  per-activity avg   per activity
+  spec       source        78.9%    71.7%-88.6%             80.1%   empty 78%  sit 85%  walk 59%  wave 98%
+  spec       AdaBN blend   68.8%    63.1%-78.3%             83.4%   empty 63%  sit 86%  walk 85%  wave 99%
+  spec-level source        66.0%    43.1%-89.7%             70.5%   empty 64%  sit 92%  walk 56%  wave 69%
+  spec-level AdaBN blend   65.7%    53.4%-83.8%             78.7%   empty 61%  sit 91%  walk 69%  wave 94%
+
+Part 2 - leave one training session out, no adaptation (5 seeds)
+  spec        62.9% (59.2%-66.4%)   empty 67%  sit 47%  walk 76%  wave 63%
+  spec-level  67.9% (64.5%-72.4%)   empty 75%  sit 49%  walk 76%  wave 73%

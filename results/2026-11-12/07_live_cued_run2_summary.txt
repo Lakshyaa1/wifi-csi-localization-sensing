@@ -1,0 +1,11 @@
+919 guesses, 593 scored (whole 5 s inside one block)
+  none       right  85.3%   per-activity avg  53.1%   empty 96% (479)  sit 100% (40)  walk 8% (36)  wave 8% (38)
+  blend      right  90.4%   per-activity avg  83.4%   empty 93% (479)  sit 100% (40)  walk 78% (36)  wave 63% (38)
+  spec_none  right  80.9%   per-activity avg  74.5%   empty 83% (479)  sit 92% (40)  walk 31% (36)  wave 92% (38)
+  spec_blend right  71.0%   per-activity avg  82.3%   empty 67% (479)  sit 95% (40)  walk 75% (36)  wave 92% (38)
+
+without block 6 (interrupted empty): 513 scored guesses
+  none       right  86.7%   per-activity avg  54.1%   empty 100% (399)  sit 100% (40)  walk 8% (36)  wave 8% (38)
+  blend      right  93.8%   per-activity avg  84.6%   empty 97% (399)  sit 100% (40)  walk 78% (36)  wave 63% (38)
+  spec_none  right  84.4%   per-activity avg  75.7%   empty 88% (399)  sit 92% (40)  walk 31% (36)  wave 92% (38)
+  spec_blend right  75.0%   per-activity avg  83.4%   empty 71% (399)  sit 95% (40)  walk 75% (36)  wave 92% (38)

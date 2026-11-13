@@ -1,0 +1,36 @@
+WiMANS 2.4 GHz, 0-1 person: 2079 clips, rooms ['classroom', 'empty_room', 'meeting_room'], non-finite 0, zeros 0.000%  (16 s)
+
+=== Part A: hardware or physics? learn in the classroom, test in other rooms ===
+
+[9 pairs] classroom 297 clips, classes ['empty', 'sit_down', 'walk', 'wave'], per class [99, 66, 66, 66]
+  within classroom (5-fold): mean 74.9%, per seed 69.4% 74.4% 77.4% 75.1% 78.5%  (154 s)
+  classroom -> meeting_room source only 59.3% (31.6%-67.3%)   AdaBN 66.4% (62.6%-70.0%)   SHOT-IM 65.8% (63.3%-67.7%)
+  classroom -> empty_room   source only 70.8% (57.2%-79.5%)   AdaBN 72.5% (67.0%-75.8%)   SHOT-IM 74.1% (70.0%-78.1%)
+
+[2 pairs (cut)] classroom 297 clips, classes ['empty', 'sit_down', 'walk', 'wave'], per class [99, 66, 66, 66]
+  within classroom (5-fold): mean 67.1%, per seed 66.7% 66.7% 67.3% 70.0% 65.0%  (109 s)
+  classroom -> meeting_room source only 55.7% (48.5%-67.7%)   AdaBN 62.9% (59.3%-67.0%)   SHOT-IM 63.3% (58.9%-67.3%)
+  classroom -> empty_room   source only 41.1% (36.4%-46.5%)   AdaBN 64.7% (62.0%-68.0%)   SHOT-IM 68.1% (65.3%-70.7%)
+
+=== Part B: WiMANS-pretrained backbone on our data ===
+
+pretraining set: 6237 samples (cut input, 3 transmitters), 10 classes, 30 epochs on cuda
+  seed 0: WiMANS training accuracy 99.7%  (7 s)
+  seed 1: WiMANS training accuracy 99.8%  (13 s)
+  seed 2: WiMANS training accuracy 99.6%  (20 s)
+  seed 3: WiMANS training accuracy 98.5%  (26 s)
+  seed 4: WiMANS training accuracy 97.7%  (33 s)
+
+our data, leave one session out
+  scratch    mean 65.7%, std 4.9%, per seed 69.1% 69.1% 57.9% 70.4% 61.8%   empty 125/175  sit 64/200  walk 159/190  wave 151/195
+  frozen     mean 63.7%, std 2.6%, per seed 67.1% 63.8% 61.8% 65.8% 59.9%   empty 106/175  sit 72/200  walk 164/190  wave 142/195
+  frozen_bn  mean 66.2%, std 2.3%, per seed 66.4% 67.1% 63.2% 69.7% 64.5%   empty 105/175  sit 80/200  walk 170/190  wave 148/195
+  finetune   mean 67.9%, std 2.0%, per seed 67.8% 70.4% 69.1% 67.8% 64.5%   empty 125/175  sit 53/200  walk 165/190  wave 173/195
+
+our data, sessions 1-3 -> 4
+  scratch    mean 57.4%, std 5.5%, per seed 53.8% 64.1% 51.3% 64.1% 53.8%   empty 15/50  sit 6/50  walk 45/45  wave 46/50
+  frozen     mean 42.6%, std 2.1%, per seed 46.2% 41.0% 41.0% 43.6% 41.0%   empty 5/50  sit 1/50  walk 45/45  wave 32/50
+  frozen_bn  mean 42.1%, std 4.8%, per seed 41.0% 48.7% 38.5% 46.2% 35.9%   empty 2/50  sit 2/50  walk 45/45  wave 33/50
+  finetune   mean 49.7%, std 3.1%, per seed 46.2% 53.8% 51.3% 51.3% 46.2%   empty 9/50  sit 2/50  walk 45/45  wave 41/50
+
+total 761 s

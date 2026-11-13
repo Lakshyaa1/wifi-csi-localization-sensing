@@ -1,0 +1,6 @@
+152 clips, lower sra room, CNN (train_cnn.py settings), 5 seeds, chance 25%
+A. random 5-fold (test clips from the same sessions as training): mean 83.2%, per seed 82.9% 84.2% 81.6% 85.5% 81.6%
+   per action: empty 155/175 = 89%  sit 142/200 = 71%  walk 174/190 = 92%  wave 161/195 = 83%
+B. leave one session out (test session never seen): 65.5% (results/2026-11-07/01_strength_check.txt)
+C. 3 actions (no sit), leave one session out, chance 33%: mean 87.0%, per seed 85.7% 91.1% 81.2% 87.5% 89.3%
+   per action: empty 163/175 = 93%  walk 159/190 = 84%  wave 165/195 = 85%

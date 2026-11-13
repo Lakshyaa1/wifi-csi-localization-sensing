@@ -1,0 +1,3 @@
+919 guesses, 596 scored (whole 5 s inside one block)
+  none   right  84.1%   per-activity avg  39.5%   empty 100% (478)  sit 50% (40)  walk 0% (40)  wave 8% (38)
+  blend  right  93.0%   per-activity avg  74.3%   empty 100% (478)  sit 100% (40)  walk 42% (40)  wave 55% (38)

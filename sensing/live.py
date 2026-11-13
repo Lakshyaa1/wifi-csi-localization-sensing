@@ -112,6 +112,44 @@ def train_cnn_adapted(dataset, train_sessions, adapt_sessions, seeds):
     return proba
 
 
+def train_cnn_stream(dataset, seeds, blend, sources=None, transform=None):
+    """CNN learned on every clip in the dataset. blend=False: used as it is (no adaptation).
+    blend=True: 'AdaBN blend' from stream_check.py, live - every 10 windows the batch-norm averages become
+    half the learned ones, half those of every window seen so far (no labels). The first 10 windows use
+    the unadapted model. Returns clip -> class probabilities, averaged over the seeds' models."""
+    import torch
+    from train_cnn import fit, prepare
+    from adapt import adabn, predict_proba
+    from stream_check import bn_layers
+    d = np.load(dataset)
+    X, y = prepare(d["X"]), torch.from_numpy(d["y"].astype(np.int64))
+    k = len(d["labels"])
+    if sources is None:
+        sources = []
+        for seed in range(seeds):
+            sources.append(fit(X, y, k, seed))
+            print(f"  seed {seed} ready")
+    seen, current = [], [m for m, sc in sources]
+
+    def proba(clip):
+        x = prepare(clip[None])
+        if transform is not None:   # e.g. spec_check.spec; sources must have been learned on the same input
+            x = transform(x)
+        p = np.mean([predict_proba(m, sc, x)[0].numpy() for m, (_, sc) in zip(current, sources)], axis=0)
+        if blend:
+            seen.append(x)
+            if len(seen) % 10 == 0:
+                allx = torch.cat(seen)
+                for i, (src, sc) in enumerate(sources):
+                    a = adabn(src, sc, allx)
+                    for la, ls in zip(bn_layers(a), bn_layers(src)):
+                        la.running_mean.copy_(0.5 * la.running_mean + 0.5 * ls.running_mean)
+                        la.running_var.copy_(0.5 * la.running_var + 0.5 * ls.running_var)
+                    current[i] = a
+        return p
+    return proba
+
+
 def train(dataset):
     d = np.load(dataset)
     X, y, fs = d["X"], d["y"], int(d["fs"])
@@ -132,10 +170,17 @@ def main():
     ap.add_argument("--train-sessions", type=int, nargs="+", default=[1, 2, 3], help="cnn: labelled sessions")
     ap.add_argument("--adapt-sessions", type=int, nargs="+", default=[4], help="cnn: sessions to adapt to, unlabelled")
     ap.add_argument("--seeds", type=int, default=5, help="cnn: models to average")
+    ap.add_argument("--adapt", choices=["shot", "none", "blend"], default="shot",
+                    help="cnn: shot = SHOT-IM on --adapt-sessions beforehand; none = CNN on all clips, no adaptation; "
+                         "blend = CNN on all clips, batch-norm averages blended with the live stream's (no labels)")
     a = ap.parse_args()
 
     clf, labels, fs, clip_sec, n_boards = train(a.dataset)
-    if a.model == "cnn":
+    if a.model == "cnn" and a.adapt != "shot":
+        print(f"training CNN on all clips, live adaptation: {a.adapt} ...")
+        cnn_proba = train_cnn_stream(a.dataset, a.seeds, a.adapt == "blend")
+        predict = lambda clip: cnn_proba(clip)
+    elif a.model == "cnn":
         print(f"training CNN on sessions {a.train_sessions}, adapting to {a.adapt_sessions} without labels ...")
         cnn_proba = train_cnn_adapted(a.dataset, a.train_sessions, a.adapt_sessions, a.seeds)
         predict = lambda clip: cnn_proba(clip)

@@ -1,0 +1,25 @@
+learn on sessions [1, 2, 3, 4, 5, 6] (207 clips), adapt to and test on [7, 8] (73 clips)
+adaptation: Adam lr 0.0001, weight decay 0.0001, 50 epochs, batch 16
+/home/lakshya-lalwani/projects/wifi-csi-localization-sensing/sensing/adapt.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return float((num / den).sqrt())
+  seed 0: adapted on 37 clips, scored on 36; SHOT-IM changed feature layers by 4.3%, final layer by 0.0%
+  seed 0: adapted on 36 clips, scored on 37; SHOT-IM changed feature layers by 4.0%, final layer by 0.0%
+  seed 1: adapted on 37 clips, scored on 36; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 1: adapted on 36 clips, scored on 37; SHOT-IM changed feature layers by 3.8%, final layer by 0.0%
+  seed 2: adapted on 37 clips, scored on 36; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 2: adapted on 36 clips, scored on 37; SHOT-IM changed feature layers by 4.0%, final layer by 0.0%
+  seed 3: adapted on 37 clips, scored on 36; SHOT-IM changed feature layers by 4.2%, final layer by 0.0%
+  seed 3: adapted on 36 clips, scored on 37; SHOT-IM changed feature layers by 3.6%, final layer by 0.0%
+  seed 4: adapted on 37 clips, scored on 36; SHOT-IM changed feature layers by 5.1%, final layer by 0.0%
+  seed 4: adapted on 36 clips, scored on 37; SHOT-IM changed feature layers by 5.2%, final layer by 0.0%
+
+method         mean   std  per seed                  right per class (summed over seeds)
+source only   74.8%  3.6%  71.2% 69.9% 79.5% 76.7% 76.7%   empty 85/90  sit 17/95  walk 94/95  wave 77/85
+AdaBN         84.4%  8.9%  68.5% 86.3% 90.4% 94.5% 82.2%   empty 80/90  sit 62/95  walk 95/95  wave 71/85
+SHOT-IM       96.4%  1.9%  93.2% 98.6% 97.3% 97.3% 95.9%   empty 90/90  sit 88/95  walk 95/95  wave 79/85
+
+share of test clips given each label (no labels needed for this)
+  source only  empty 32%  sit 5%  walk 32%  wave 32%
+  AdaBN        empty 26%  sit 18%  walk 32%  wave 24%
+  SHOT-IM      empty 26%  sit 24%  walk 28%  wave 22%

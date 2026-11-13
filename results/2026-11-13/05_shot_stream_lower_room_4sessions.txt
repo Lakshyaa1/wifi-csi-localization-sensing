@@ -1,0 +1,23 @@
+learn on sessions [1, 2, 3, 4] (152 clips)
+models ready
+
+[20261112_175734_roomHreal] 590 windows; mix: empty 82%  sit 7%  walk 7%  wave 4%
+  method          accuracy  range over seeds  per-activity avg   per activity                                share of windows given each label
+  source             84.3%    60.7%-92.7%             67.5%   empty  91%  sit  79%  walk   0%  wave 100%     empty 77%  sit 13%  walk 0%  wave 10%
+  AdaBN all          36.1%    33.4%-38.5%             65.5%   empty  26%  sit  76%  walk 100%  wave  60%     empty 22%  sit 31%  walk 11%  wave 36%
+  AdaBN blend        86.5%    67.8%-93.2%             89.3%   empty  86%  sit  92%  walk  79%  wave 100%     empty 71%  sit 18%  walk 6%  wave 5%
+  SHOT-IM stream     36.7%    35.4%-38.0%             34.1%   empty  36%  sit   0%  walk 100%  wave   0%     empty 30%  sit 28%  walk 18%  wave 24%
+
+[20261112_181925_roomHlive2] 612 windows; mix: empty 79%  sit 7%  walk 7%  wave 7%
+  method          accuracy  range over seeds  per-activity avg   per activity                                share of windows given each label
+  source             82.8%    80.1%-85.0%             41.3%   empty  99%  sit  52%  walk   0%  wave  14%     empty 87%  sit 6%  walk 0%  wave 7%
+  AdaBN all          56.5%    52.3%-59.6%             61.8%   empty  55%  sit  88%  walk  99%  wave   7%     empty 43%  sit 19%  walk 14%  wave 24%
+  AdaBN blend        92.0%    85.8%-95.3%             75.2%   empty  98%  sit  96%  walk  60%  wave  46%     empty 81%  sit 10%  walk 4%  wave 5%
+  SHOT-IM stream     33.0%    32.2%-34.8%             33.2%   empty  33%  sit   0%  walk 100%  wave   0%     empty 26%  sit 27%  walk 21%  wave 26%
+
+[20261112_191606_roomHlive3] 531 windows; mix: empty 76%  sit 8%  walk 8%  wave 8%
+  method          accuracy  range over seeds  per-activity avg   per activity                                share of windows given each label
+  source             84.4%    75.0%-90.2%             56.6%   empty  97%  sit  98%  walk  18%  wave  13%     empty 80%  sit 13%  walk 1%  wave 5%
+  AdaBN all          24.3%    20.7%-29.0%             49.5%   empty  13%  sit  90%  walk  85%  wave  10%     empty 10%  sit 32%  walk 17%  wave 42%
+  AdaBN blend        89.4%    76.3%-96.4%             77.3%   empty  95%  sit 100%  walk  68%  wave  47%     empty 74%  sit 16%  walk 6%  wave 4%
+  SHOT-IM stream     33.7%    29.0%-42.9%             38.0%   empty  32%  sit  20%  walk 100%  wave   0%     empty 24%  sit 24%  walk 22%  wave 29%

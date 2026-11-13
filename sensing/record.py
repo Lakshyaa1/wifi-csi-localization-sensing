@@ -122,7 +122,10 @@ def main():
     ap.add_argument("--baud", type=int, default=921600)
     ap.add_argument("--room", required=True, help="room name, e.g. A or lab")
     ap.add_argument("--person", default="p1", help="who is acting (for later analysis)")
-    ap.add_argument("--plan", required=True, help="label:count list, e.g. empty:10,walk:10")
+    ap.add_argument("--plan", default=None, help="label:count list, e.g. empty:10,walk:10")
+    ap.add_argument("--script", default=None,
+                    help="label:seconds blocks recorded in this exact order on a timer, "
+                         "e.g. empty:60,walk:15,empty:45 (instead of --plan)")
     ap.add_argument("--clip-sec", type=float, default=5.0)
     ap.add_argument("--gap-sec", type=float, default=8.0, help="pause between clips in --auto mode")
     ap.add_argument("--auto", action="store_true", help="run clips on a timer instead of pressing Enter")
@@ -160,13 +163,22 @@ def main():
         else:
             print("No default gateway found; running without --ping")
 
-    plan = parse_plan(a.plan)
+    if bool(a.plan) == bool(a.script):
+        sys.exit("give exactly one of --plan or --script")
+    if a.script:   # ordered blocks, each with its own length
+        a.auto, a.no_shuffle = True, True
+    plan = parse_plan(a.plan or a.script)
     done = {}
     if a.resume:   # count clips already recorded fine; flagged ones get recorded again
         for row in csv.DictReader(open(os.path.join(a.resume, "index.csv"))):
             if row["flag"] == "ok":
                 done[row["label"]] = done.get(row["label"], 0) + 1
     labels = [lab for lab, n in plan for _ in range(max(0, n - done.get(lab, 0)))]
+    durs = [a.clip_sec] * len(labels)
+    if a.script:
+        if a.resume:
+            sys.exit("--script cannot be resumed; record it again")
+        labels, durs = [lab for lab, n in plan], [float(n) for lab, n in plan]
     if not a.no_shuffle:
         random.shuffle(labels)   # interleave classes so slow drift doesn't line up with one class
 
@@ -194,7 +206,7 @@ def main():
         r.start()
 
     if not a.resume:
-        json.dump(dict(room=a.room, person=a.person, ports=a.ports, baud=a.baud, plan=plan,
+        json.dump(dict(room=a.room, person=a.person, ports=a.ports, baud=a.baud, plan=plan, script=bool(a.script),
                        clip_sec=a.clip_sec, max_gap=a.max_gap, ping=a.ping, simulated=a.simulate,
                        boards=[r.name for r in readers], started=stamp),
                   open(os.path.join(sdir, "meta.json"), "w"), indent=2)
@@ -229,7 +241,7 @@ def main():
     first_id = clip_id
     try:
         while i < len(labels):
-            lab = labels[i]
+            lab, dur = labels[i], durs[i]
             print(f"\nClip {i + 1}/{len(labels)}   next: {lab.upper()}")
             say(f"next, {lab}", a.speak)
             progress = f"clip {i + 1} of {len(labels)}"
@@ -247,13 +259,13 @@ def main():
             for c in (3, 2, 1):
                 print(f"  {c} ...", end="", flush=True); time.sleep(1)
             beep(); say("go", a.speak); print("  GO")
-            screen.show("go", lab, a.clip_sec, progress)
+            screen.show("go", lab, dur, progress)
             counts0 = [r.total for r in readers]
             for r in readers:
                 r.reset_gap()
             sim_state["activity"] = lab
             t0 = time.time()
-            while time.time() - t0 < a.clip_sec:
+            while time.time() - t0 < dur:
                 time.sleep(0.5)
                 print("    " + "  ".join(f"{r.name} {r.rate():.0f}/s" for r in readers), end="\r")
             t1 = time.time()
@@ -261,7 +273,7 @@ def main():
             beep(); say("stop", a.speak); print("\n  STOP")
             screen.show("wait", "stop", 0, progress)
             got = [r.total - c0 for r, c0 in zip(readers, counts0)]
-            need = a.min_rate * a.clip_sec
+            need = a.min_rate * dur
             gaps = [r.max_gap for r in readers]
             if not all(g >= need for g in got):
                 flag = "low_rate"

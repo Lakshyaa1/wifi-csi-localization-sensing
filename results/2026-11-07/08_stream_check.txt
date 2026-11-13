@@ -1,0 +1,45 @@
+Part 1 - streams from the live session, CNN learned on all 152 clips, 5 seeds
+
+[blocks] 459 windows, 408 scored; mix: empty 25%  sit 25%  walk 25%  wave 25%
+  method          right  per-activity avg   per activity
+  source          45.5%             45.5%   empty 68%  sit 42%  walk 4%  wave 68%
+  AdaBN all       63.6%             63.6%   empty 36%  sit 74%  walk 70%  wave 74%
+  AdaBN recent    34.4%             34.4%   empty 25%  sit 45%  walk 30%  wave 37%
+  AdaBN running   48.2%             48.2%   empty 49%  sit 61%  walk 35%  wave 48%
+  AdaBN blend     56.9%             56.9%   empty 64%  sit 62%  walk 29%  wave 73%
+  TENT            26.8%             26.8%   empty 10%  sit 47%  walk 15%  wave 35%
+  T3A             48.6%             48.6%   empty 72%  sit 47%  walk 6%  wave 69%
+
+[mostly empty] 174 windows, 163 scored; mix: empty 63%  sit 13%  walk 12%  wave 12%
+  method          right  per-activity avg   per activity
+  source          57.7%             47.2%   empty 68%  sit 48%  walk 2%  wave 71%
+  AdaBN all       43.7%             62.3%   empty 25%  sit 74%  walk 74%  wave 76%
+  AdaBN recent    41.1%             55.2%   empty 27%  sit 46%  walk 80%  wave 68%
+  AdaBN running   56.7%             62.0%   empty 51%  sit 67%  walk 60%  wave 70%
+  AdaBN blend     60.6%             60.2%   empty 61%  sit 65%  walk 37%  wave 78%
+  TENT            17.1%             25.6%   empty 9%  sit 26%  walk 19%  wave 49%
+  T3A             54.2%             47.0%   empty 61%  sit 50%  walk 1%  wave 76%
+
+[no walk] 357 windows, 306 scored; mix: empty 33%  sit 33%  walk 0%  wave 33%
+  method          right  per-activity avg   per activity
+  source          59.3%             59.3%   empty 68%  sit 42%  wave 68%
+  AdaBN all       48.8%             48.8%   empty 21%  sit 71%  wave 54%
+  AdaBN recent    37.3%             37.3%   empty 25%  sit 47%  wave 39%
+  AdaBN running   53.7%             53.7%   empty 47%  sit 61%  wave 54%
+  AdaBN blend     65.7%             65.7%   empty 60%  sit 64%  wave 73%
+  TENT            30.9%             30.9%   empty 8%  sit 47%  wave 37%
+  T3A             60.4%             60.4%   empty 58%  sit 54%  wave 69%
+
+Part 2 - offline adaptation on unbalanced clips: learn on sessions 1-3, session 4 (39 clips), 5 seeds
+  adapted on all 39 clips (balanced)
+    source    56.4% (48.7%-64.1%)   empty 26%  sit 12%  walk 100%  wave 92%
+    AdaBN     67.2% (56.4%-76.9%)   empty 50%  sit 42%  walk 91%  wave 88%
+    SHOT-IM   87.7% (82.1%-94.9%)   empty 74%  sit 86%  walk 98%  wave 94%
+  adapted on empty-heavy (10 empty + 3 each)
+    source    56.4% (48.7%-64.1%)   empty 26%  sit 12%  walk 100%  wave 92%
+    AdaBN     61.0% (56.4%-74.4%)   empty 34%  sit 16%  walk 98%  wave 100%
+    SHOT-IM   61.5% (56.4%-71.8%)   empty 44%  sit 8%  walk 100%  wave 98%
+  adapted on no walk clips
+    source    56.4% (48.7%-64.1%)   empty 26%  sit 12%  walk 100%  wave 92%
+    AdaBN     61.5% (56.4%-69.2%)   empty 44%  sit 8%  walk 100%  wave 98%
+    SHOT-IM   58.5% (48.7%-74.4%)   empty 38%  sit 12%  walk 100%  wave 88%

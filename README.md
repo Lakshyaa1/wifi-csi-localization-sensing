@@ -81,5 +81,3 @@ With hardware, follow the [data collection guide](docs/data_collection.md).
 | Live classifier, same room (Nov 12) | Two scripted live runs, about 80% of windows empty, model from sessions 1–4. No adaptation: 84.1% and 86.7% of 5 s windows, but only 39.5% and 54.1% averaged per activity. Blending learned and running batch-norm averages: 93.0% and 93.8% (74.3% and 84.6% per activity) |
 | New room, balanced clips (Nov 13) | Model from six sessions in the first room, 73 clips in a second room. Adapt on one session without labels, test on the other: no adaptation **74.8%** (sit 18%), AdaBN 84.4%, SHOT-IM **96.4%** (sit 93%) ([outputs](results/2026-11-13/)) |
 | New room, mostly-empty recording (Nov 13) | 403 windows, 77% empty. No adaptation 90.1% (sit 6%). Adapting on the recording itself: AdaBN 40.9%, SHOT-IM 43.8%. SHOT-IM on the balanced clips, then left unchanged: **97.5%**. All new-room data is from one night; another day is not yet tested |
-
-![Pilot 1: still vs motion](espnow_pilot/plots/first_motion_static_vs_motion.png)
